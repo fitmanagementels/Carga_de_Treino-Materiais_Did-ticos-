@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+    {
+      "path": "../_diretrizes-padrao",
+    },
+    {
+      "path": "../_templates",
+    },
+    {
+      "path": "../_prompts-padrao",
+    },
+  ],
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "aula-controle-carga",
+  },
+}

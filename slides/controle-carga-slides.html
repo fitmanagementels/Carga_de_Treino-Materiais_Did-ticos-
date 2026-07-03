@@ -1,0 +1,1606 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle de Carga na Sessao - Slides</title>
+  <style>
+    :root {
+      color-scheme: dark light;
+      --black: #000000;
+      --graphite: #0b0b0b;
+      --graphite-2: #151515;
+      --graphite-3: #242628;
+      --paper: #f2f3f6;
+      --surface: #ffffff;
+      --text: #ffffff;
+      --ink: #111315;
+      --muted: #aeb6bd;
+      --line: #3a3f42;
+      --lime: #dfff2f;
+      --lime-soft: #ecf7a0;
+      --blue: #2f6f9f;
+      --amber: #f3b646;
+      --danger: #d75f4f;
+      --radius: 8px;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: #111315;
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    .deck {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    .slide {
+      min-height: 92vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 24px;
+      margin: 0 0 28px;
+      padding: 42px;
+      position: relative;
+      overflow: hidden;
+      background: var(--graphite);
+      border: 1px solid #202326;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      page-break-after: always;
+    }
+
+    .slide.light {
+      background: var(--paper);
+      color: var(--ink);
+      border-color: #d8dde1;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      right: -130px;
+      top: -90px;
+      width: 340px;
+      height: 260px;
+      background: linear-gradient(135deg, transparent 0 42%, rgba(223, 255, 47, 0.9) 42% 58%, transparent 58%);
+      opacity: 0.45;
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+
+    .slide.light::before {
+      opacity: 0.72;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 6px 10px;
+      background: var(--lime);
+      color: #101214;
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .number {
+      min-width: 46px;
+      text-align: right;
+      color: var(--lime);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .light .number {
+      color: #375000;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    ul {
+      margin-top: 0;
+    }
+
+    h1,
+    h2 {
+      max-width: 840px;
+      margin-bottom: 0;
+      font-size: clamp(2.25rem, 4.2vw, 4.1rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      overflow-wrap: normal;
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    .body {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(340px, 1.05fr);
+      gap: 34px;
+      align-items: center;
+      min-height: 0;
+    }
+
+    .body.single {
+      grid-template-columns: 1fr;
+      place-items: center;
+      text-align: center;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin: 18px 0 0;
+      color: #dce2e6;
+      font-size: clamp(1.08rem, 2vw, 1.45rem);
+      font-weight: 700;
+    }
+
+    .light .lead {
+      color: #394148;
+    }
+
+    .principle {
+      max-width: 720px;
+      margin-top: 22px;
+      padding: 14px 16px;
+      color: var(--ink);
+      background: var(--lime);
+      border-left: 8px solid #8aa800;
+      border-radius: var(--radius);
+      font-size: clamp(1rem, 1.5vw, 1.22rem);
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .light .principle {
+      color: var(--ink);
+      background: var(--lime);
+    }
+
+    .bullets {
+      display: grid;
+      gap: 12px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: clamp(1.15rem, 2vw, 1.72rem);
+      font-weight: 800;
+    }
+
+    .bullets li {
+      min-width: 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .bullets li::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      flex: 0 0 12px;
+      background: var(--lime);
+      transform: skew(-18deg);
+    }
+
+    .visual {
+      min-height: 380px;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #17191b, #090a0b);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .light .visual {
+      background: #ffffff;
+      border-color: #cfd6dc;
+    }
+
+    .visual::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 auto;
+      width: 46%;
+      height: 34%;
+      background: linear-gradient(135deg, transparent 0 50%, rgba(223, 255, 47, 0.22) 50%);
+      pointer-events: none;
+    }
+
+    .hero-visual {
+      min-height: 500px;
+      background:
+        linear-gradient(120deg, rgba(0, 0, 0, 0.76), rgba(0, 0, 0, 0.15)),
+        radial-gradient(circle at 70% 35%, rgba(223, 255, 47, 0.28), transparent 30%),
+        linear-gradient(135deg, #2b2f32, #050505);
+    }
+
+    .photo-lines {
+      width: min(420px, 100%);
+      aspect-ratio: 1 / 1;
+      position: relative;
+      border: 1px solid #5f676e;
+      background:
+        linear-gradient(90deg, transparent 0 48%, rgba(223, 255, 47, 0.9) 48% 52%, transparent 52%),
+        linear-gradient(135deg, #32383d, #111315);
+      transform: skew(-6deg);
+    }
+
+    .photo-lines::before,
+    .photo-lines::after {
+      content: "";
+      position: absolute;
+      border: 4px solid var(--lime);
+      transform: skew(6deg);
+    }
+
+    .photo-lines::before {
+      left: 18%;
+      top: 12%;
+      width: 34%;
+      height: 52%;
+      border-right: 0;
+      border-bottom: 0;
+    }
+
+    .photo-lines::after {
+      right: 14%;
+      bottom: 12%;
+      width: 44%;
+      height: 36%;
+      border-left: 0;
+      border-top: 0;
+    }
+
+    .scene,
+    .photo-panel,
+    .diagonal-compare,
+    .gauge,
+    .mixer,
+    .scope-map,
+    .x-symbol,
+    .shield-visual,
+    .amplitude-compare,
+    .energy-diagonal {
+      width: 100%;
+      min-height: 300px;
+      position: relative;
+    }
+
+    .photo-panel {
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(223, 255, 47, 0.16), transparent 42%),
+        linear-gradient(145deg, #2b3034, #090a0b);
+      border: 1px solid #566068;
+      overflow: hidden;
+    }
+
+    .photo-panel::before {
+      content: "";
+      position: absolute;
+      inset: 13% 18%;
+      border: 3px solid rgba(223, 255, 47, 0.92);
+      transform: skew(-10deg);
+    }
+
+    .photo-panel::after {
+      content: attr(data-caption);
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      padding: 8px 12px;
+      color: #101214;
+      background: var(--lime);
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .person-shape,
+    .plate-shape {
+      position: absolute;
+      background: linear-gradient(180deg, #d6dde2, #6f7880);
+      filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.28));
+    }
+
+    .person-shape {
+      width: 92px;
+      height: 210px;
+      clip-path: polygon(35% 0, 65% 0, 76% 22%, 68% 58%, 86% 100%, 14% 100%, 32% 58%, 24% 22%);
+    }
+
+    .person-shape.coach {
+      left: 24%;
+      top: 18%;
+    }
+
+    .person-shape.client {
+      right: 23%;
+      top: 22%;
+      opacity: 0.78;
+    }
+
+    .plate-shape {
+      right: 16%;
+      bottom: 22%;
+      width: 110px;
+      height: 54px;
+      border: 8px solid var(--lime);
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .diagonal-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      border: 1px solid #4f575e;
+      background: #121416;
+    }
+
+    .diagonal-compare > div {
+      display: grid;
+      align-content: center;
+      gap: 10px;
+      padding: 30px;
+      min-height: 300px;
+      clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+    }
+
+    .diagonal-compare > div:last-child {
+      margin-left: -42px;
+      padding-left: 58px;
+      clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+      background: var(--lime);
+      color: #101214;
+    }
+
+    .diagonal-compare .muted-panel {
+      background: #2a2f33;
+      color: #f4f6f7;
+    }
+
+    .diagonal-compare strong,
+    .scope-map strong {
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      text-transform: uppercase;
+    }
+
+    .tags {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .tag {
+      position: absolute;
+      padding: 7px 10px;
+      background: var(--lime);
+      color: #101214;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+    }
+
+    .tag.t1 { left: 9%; top: 18%; }
+    .tag.t2 { right: 9%; top: 36%; }
+    .tag.t3 { left: 15%; bottom: 16%; }
+    .tag.t4 { right: 16%; bottom: 18%; }
+
+    .gauge {
+      display: grid;
+      place-items: center;
+    }
+
+    .dial {
+      width: min(390px, 88%);
+      aspect-ratio: 2 / 1;
+      position: relative;
+      overflow: hidden;
+      border-radius: 390px 390px 0 0;
+      background:
+        radial-gradient(circle at 50% 100%, #111315 0 26%, transparent 27%),
+        conic-gradient(from 270deg at 50% 100%, #4c555c 0 30deg, var(--lime) 30deg 92deg, var(--amber) 92deg 132deg, #4c555c 132deg 180deg, transparent 180deg 360deg);
+    }
+
+    .dial::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 44%;
+      height: 7px;
+      background: var(--lime);
+      transform-origin: left center;
+      transform: rotate(-28deg);
+      border-radius: 10px;
+    }
+
+    .dial::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      color: var(--lime);
+      font-size: 1.2rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .energy-diagonal {
+      display: grid;
+      align-content: center;
+      padding: 28px;
+    }
+
+    .energy-diagonal::before {
+      content: "";
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      top: 48%;
+      height: 16px;
+      background: var(--lime);
+      transform: skew(-22deg) rotate(-13deg);
+      box-shadow: 0 0 40px rgba(223, 255, 47, 0.44);
+    }
+
+    .energy-diagonal .node {
+      position: relative;
+      z-index: 1;
+      width: max-content;
+      margin: 12px;
+      padding: 10px 14px;
+      background: #111315;
+      border: 1px solid #5f676e;
+      color: #ffffff;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .energy-diagonal .node:nth-child(2) { margin-left: auto; }
+    .energy-diagonal .node:nth-child(3) { margin-left: 28%; }
+
+    .mixer {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: end;
+      padding: 18px 8px;
+    }
+
+    .knob {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      color: #d8dde1;
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .knob::before {
+      content: "";
+      width: 34px;
+      height: 210px;
+      border: 1px solid #566068;
+      background:
+        linear-gradient(180deg, transparent 0 44%, var(--lime) 44% 52%, transparent 52%),
+        #16191b;
+    }
+
+    .knob.active::before {
+      background:
+        linear-gradient(180deg, transparent 0 24%, var(--lime) 24% 35%, transparent 35%),
+        #16191b;
+      box-shadow: 0 0 28px rgba(223, 255, 47, 0.5);
+    }
+
+    .shield-visual {
+      display: grid;
+      place-items: center;
+    }
+
+    .shield-visual::before {
+      content: "";
+      width: min(260px, 70%);
+      aspect-ratio: 0.78 / 1;
+      background: var(--lime);
+      clip-path: polygon(50% 0, 88% 14%, 78% 76%, 50% 100%, 22% 76%, 12% 14%);
+    }
+
+    .shield-visual::after {
+      content: "variacao mais estavel";
+      position: absolute;
+      color: #101214;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-align: center;
+      max-width: 180px;
+    }
+
+    .amplitude-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+
+    .amplitude-compare .pose {
+      display: grid;
+      place-items: end center;
+      padding: 20px;
+      min-height: 300px;
+      background: #15181a;
+      border: 1px solid #485057;
+    }
+
+    .amplitude-compare .pose.good {
+      border-color: var(--lime);
+      box-shadow: inset 0 -10px 0 var(--lime);
+    }
+
+    .amplitude-compare .pose::before {
+      content: "";
+      width: 86px;
+      height: 190px;
+      background: linear-gradient(180deg, #d9e0e5, #6f7880);
+      clip-path: polygon(36% 0, 64% 0, 76% 22%, 68% 62%, 86% 100%, 14% 100%, 32% 62%, 24% 22%);
+    }
+
+    .amplitude-compare .pose.short::before {
+      height: 145px;
+      opacity: 0.62;
+    }
+
+    .scope-map {
+      display: grid;
+      place-items: center;
+    }
+
+    .scope-map .center {
+      width: min(260px, 62%);
+      aspect-ratio: 1 / 1;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: #101214;
+      background: var(--lime);
+      text-align: center;
+      font-weight: 900;
+      text-transform: uppercase;
+      transform: skew(-8deg);
+    }
+
+    .scope-map .out {
+      position: absolute;
+      padding: 9px 12px;
+      background: #202428;
+      border: 1px solid #5f676e;
+      color: #dce2e6;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .scope-map .out.o1 { top: 12%; left: 9%; }
+    .scope-map .out.o2 { top: 16%; right: 8%; }
+    .scope-map .out.o3 { bottom: 14%; left: 10%; }
+    .scope-map .out.o4 { bottom: 12%; right: 8%; }
+
+    .x-symbol {
+      display: grid;
+      place-items: center;
+      min-height: 380px;
+    }
+
+    .x-symbol::before,
+    .x-symbol::after {
+      content: "";
+      position: absolute;
+      width: min(520px, 80%);
+      height: 88px;
+      background: var(--lime);
+      transform: rotate(58deg) skew(-18deg);
+    }
+
+    .x-symbol::after {
+      transform: rotate(-58deg) skew(18deg);
+    }
+
+    .x-symbol strong {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      color: #ffffff;
+      font-size: clamp(2rem, 5vw, 4.4rem);
+      line-height: 0.95;
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 0 8px 28px rgba(0, 0, 0, 0.86);
+    }
+
+    .flow,
+    .cards,
+    .matrix,
+    .split,
+    .scale,
+    .watch-map,
+    .phrase-grid {
+      width: 100%;
+      display: grid;
+      gap: 14px;
+    }
+
+    .flow {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .flow.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .step,
+    .card,
+    .cell {
+      min-height: 96px;
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      padding: 16px;
+      border: 1px solid #485057;
+      background: #17191b;
+      border-radius: var(--radius);
+    }
+
+    .light .step,
+    .light .card,
+    .light .cell {
+      background: #ffffff;
+      border-color: #cfd6dc;
+    }
+
+    .step strong,
+    .card strong,
+    .cell strong {
+      color: var(--lime);
+      font-size: 1.2rem;
+      text-transform: uppercase;
+    }
+
+    .light .step strong,
+    .light .card strong,
+    .light .cell strong {
+      color: #364d00;
+    }
+
+    .step span,
+    .card span,
+    .cell span {
+      color: #d8dde1;
+      font-size: 0.95rem;
+    }
+
+    .light .step span,
+    .light .card span,
+    .light .cell span {
+      color: #4b545b;
+    }
+
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cards.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .matrix {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .matrix .wide {
+      grid-column: 1 / -1;
+      background: var(--lime);
+      color: #111315;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .matrix .wide strong {
+      color: #111315;
+    }
+
+    .split {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .split .side {
+      min-height: 230px;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      padding: 22px;
+      background: #191c1f;
+      border-left: 8px solid var(--lime);
+      border-radius: var(--radius);
+    }
+
+    .split .side.muted {
+      border-left-color: #60686f;
+    }
+
+    .light .split .side {
+      background: #ffffff;
+    }
+
+    .scale {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: end;
+      min-height: 260px;
+    }
+
+    .bar {
+      display: grid;
+      align-content: end;
+      min-height: 80px;
+      padding: 10px;
+      background: linear-gradient(180deg, var(--lime), #86a500);
+      color: #111315;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .bar:nth-child(1) { height: 95px; }
+    .bar:nth-child(2) { height: 135px; }
+    .bar:nth-child(3) { height: 180px; }
+    .bar:nth-child(4) { height: 220px; }
+    .bar:nth-child(5) { height: 250px; background: linear-gradient(180deg, var(--amber), #8f5e13); }
+
+    .watch-map {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+
+    .figure {
+      width: min(260px, 100%);
+      aspect-ratio: 0.72 / 1;
+      justify-self: center;
+      position: relative;
+    }
+
+    .figure::before {
+      content: "";
+      position: absolute;
+      inset: 8% 33% 0;
+      background: linear-gradient(180deg, #cdd3d8, #6f7880);
+      clip-path: polygon(35% 0, 65% 0, 78% 22%, 70% 57%, 88% 100%, 12% 100%, 30% 57%, 22% 22%);
+    }
+
+    .marker {
+      position: absolute;
+      min-width: 110px;
+      padding: 7px 9px;
+      background: var(--lime);
+      color: #111315;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .marker.one { left: 0; top: 18%; }
+    .marker.two { right: 0; top: 42%; }
+    .marker.three { left: 10%; bottom: 12%; }
+
+    .phrase-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .phrase {
+      min-height: 120px;
+      padding: 18px;
+      display: grid;
+      align-content: center;
+      gap: 10px;
+      background: #17191b;
+      border: 1px solid #4a5258;
+      border-radius: var(--radius);
+      font-weight: 800;
+    }
+
+    .phrase.good {
+      border-left: 8px solid var(--lime);
+    }
+
+    .phrase.bad {
+      border-left: 8px solid var(--danger);
+    }
+
+    .light .phrase {
+      background: #ffffff;
+      color: var(--ink);
+      border-color: #cfd6dc;
+    }
+
+    .notes {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 8px;
+      padding: 14px 16px;
+      color: #d6dde2;
+      background: rgba(255, 255, 255, 0.06);
+      border-left: 5px solid var(--lime);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 0.92rem;
+    }
+
+    .light .notes {
+      color: #3a4249;
+      background: rgba(17, 19, 21, 0.06);
+    }
+
+    .notes b {
+      color: var(--lime);
+      text-transform: uppercase;
+    }
+
+    .light .notes b {
+      color: #354d00;
+    }
+
+    .source {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .light .source {
+      color: #667078;
+    }
+
+    @media (max-width: 860px) {
+      .deck {
+        width: min(100% - 18px, 680px);
+        padding-top: 9px;
+      }
+
+      .slide {
+        min-height: auto;
+        padding: 24px;
+      }
+
+      header {
+        align-items: center;
+      }
+
+      .body,
+      .body.single {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        text-align: left;
+      }
+
+      .visual,
+      .hero-visual {
+        min-height: 300px;
+      }
+
+      .flow,
+      .flow.four,
+      .cards,
+      .cards.three,
+      .matrix,
+      .split,
+      .phrase-grid,
+      .watch-map,
+      .diagonal-compare,
+      .amplitude-compare,
+      .mixer {
+        grid-template-columns: 1fr;
+      }
+
+      .diagonal-compare > div,
+      .diagonal-compare > div:last-child {
+        margin-left: 0;
+        padding: 24px;
+        min-height: 150px;
+        clip-path: none;
+      }
+
+      .photo-panel,
+      .scene,
+      .gauge,
+      .mixer,
+      .scope-map,
+      .x-symbol,
+      .shield-visual,
+      .amplitude-compare,
+      .energy-diagonal {
+        min-height: 260px;
+      }
+
+      .mixer {
+        align-items: stretch;
+      }
+
+      .knob {
+        grid-template-columns: 46px 1fr;
+        align-items: center;
+        justify-items: start;
+      }
+
+      .knob::before {
+        width: 46px;
+        height: 40px;
+      }
+
+      .scope-map .out {
+        position: static;
+        margin: 6px;
+      }
+
+      .scope-map {
+        gap: 8px;
+      }
+
+      .x-symbol::before,
+      .x-symbol::after {
+        width: min(360px, 86%);
+        height: 62px;
+      }
+
+      .scale {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    @media print {
+      @page {
+        size: landscape;
+        margin: 10mm;
+      }
+
+      body {
+        background: #ffffff;
+      }
+
+      .deck {
+        width: 100%;
+        padding: 0;
+      }
+
+      .slide {
+        min-height: calc(100vh - 20mm);
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+        break-after: page;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" aria-label="Apresentacao Controle de Carga na Sessao">
+    <section class="slide" id="slide-1" aria-labelledby="slide-1-title">
+      <header><span class="kicker">Abertura</span><span class="number">01 / 32</span></header>
+      <div class="body">
+        <div>
+          <h1 id="slide-1-title">Controle de carga acontece no atendimento</h1>
+          <p class="lead">A ficha orienta. A sessao calibra. A decisao acontece agora.</p>
+        </div>
+        <div class="visual hero-visual">
+          <div class="photo-panel" data-caption="ajuste em tempo real" aria-hidden="true">
+            <span class="person-shape coach"></span>
+            <span class="person-shape client"></span>
+            <span class="plate-shape"></span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Abra mostrando que a aula nao e sobre decorar percentuais ou planejar ciclos. O foco e ler o aluno durante a sessao e ajustar a demanda com criterio. <span class="source">Fonte: roteiro slide 1; fonte mestre secoes 1, 2 e 3.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-2" aria-labelledby="slide-2-title">
+      <header><span class="kicker">Bloco 1 - Problema real</span><span class="number">02 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-2-title">O aluno planejado nem sempre chega igual</h2>
+          <ul class="bullets"><li>Mesmo peso.</li><li>Dia diferente.</li><li>Resposta diferente.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="diagonal-compare">
+            <div class="muted-panel"><strong>Plano</strong><span>Carga prevista na ficha</span></div>
+            <div><strong>Sessao real</strong><span>Resposta observada hoje</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Use exemplos orais de sono ruim, rotina cansativa, inseguranca ou melhora inesperada. Ajustar nao e admitir erro no plano; e ler o que a sessao esta mostrando. <span class="source">Fonte: roteiro slide 2; roteiro mestre bloco 1.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-3" aria-labelledby="slide-3-title">
+      <header><span class="kicker">Bloco 1 - Criterio</span><span class="number">03 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-3-title">Ajuste nao e improviso</h2>
+          <p class="lead">Antes de mudar a carga, entenda qual problema dominante apareceu.</p>
+        </div>
+        <div class="visual">
+          <div class="diagonal-compare">
+            <div class="muted-panel"><strong>Duvida</strong><span>Testar qualquer coisa</span></div>
+            <div><strong>Criterio</strong><span>Observar, interpretar e ajustar</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Apresente a logica que sera repetida: observar, interpretar e ajustar o minimo necessario. <span class="source">Fonte: roteiro slide 3; criterios de operacionalidade.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-4" aria-labelledby="slide-4-title">
+      <header><span class="kicker">Bloco 2 - Vocabulario minimo</span><span class="number">04 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-4-title">Carga nao e so peso</h2>
+          <ul class="bullets"><li>Peso.</li><li>Repeticoes e series.</li><li>Amplitude, ritmo e intervalo.</li><li>Variacao do exercicio.</li></ul>
+          <p class="principle">Controlar carga e ajustar a demanda, nao apenas escolher kg.</p>
+        </div>
+        <div class="visual">
+          <div class="cards">
+            <div class="card"><strong>kg</strong><span>Peso externo</span></div>
+            <div class="card"><strong>reps</strong><span>Volume da serie</span></div>
+            <div class="card"><strong>tempo</strong><span>Ritmo e intervalo</span></div>
+            <div class="card"><strong>ROM</strong><span>Amplitude e variacao</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Mostre que o trainee controla mais variaveis do que imagina. O peso importa, mas nao e a unica forma de aumentar ou reduzir demanda. <span class="source">Fonte: roteiro slide 4; roteiro mestre bloco 2.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-5" aria-labelledby="slide-5-title">
+      <header><span class="kicker">Bloco 2 - Comparacao</span><span class="number">05 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-5-title">O corpo responde a proposta</h2>
+          <p class="lead">Intensidade e a relacao entre o que foi proposto e o que o aluno demonstra.</p>
+          <p class="principle">Externa = proposta. Interna = resposta.</p>
+        </div>
+        <div class="visual">
+          <div class="matrix">
+            <div class="cell"><strong>10 kg</strong><span>Aluno A: leve</span></div>
+            <div class="cell"><strong>10 kg</strong><span>Aluno B: no limite</span></div>
+            <div class="cell wide"><strong>Mesmo peso externo, respostas diferentes</strong></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Compare dois alunos usando a mesma carga e tendo respostas diferentes. Evite transformar carga interna em explicacao fisiologica longa. <span class="source">Fonte: roteiro slide 5; criterios de linguagem.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-6" aria-labelledby="slide-6-title">
+      <header><span class="kicker">Bloco 2 - Prescricao e sessao</span><span class="number">06 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-6-title">Prescrito x acontecendo</h2>
+          <ul class="bullets"><li>Plano inicial.</li><li>Resposta observada.</li><li>Decisao da proxima serie.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="energy-diagonal">
+            <div class="node">Ficha</div>
+            <div class="node">Serie real</div>
+            <div class="node">Proxima decisao</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> A ficha entra como ponto de partida; a primeira exposicao ao exercicio fornece dados para a proxima decisao. <span class="source">Fonte: roteiro slide 6; fonte mestre secoes 3, 5 e 9.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-7" aria-labelledby="slide-7-title">
+      <header><span class="kicker">Bloco 2 - Fechamento</span><span class="number">07 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-7-title">A relacao ainda faz sentido?</h2>
+          <ul class="bullets"><li>O que eu propus?</li><li>O que o aluno mostrou?</li><li>A intensidade ficou adequada?</li></ul>
+        </div>
+        <div class="visual">
+          <div class="gauge"><div class="dial" data-label="zona alvo"></div></div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Controlar carga e comparar proposta e resposta, nao apenas trocar peso. Esta pergunta prepara o bloco de observacao inicial. <span class="source">Fonte: roteiro slide 7; roteiro mestre bloco 2.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-8" aria-labelledby="slide-8-title">
+      <header><span class="kicker">Bloco 3 - Leitura inicial</span><span class="number">08 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-8-title">A decisao comeca antes da serie efetiva</h2>
+          <ul class="bullets"><li>Estado geral.</li><li>Aquecimento.</li><li>Primeiras repeticoes.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="photo-panel" data-caption="leitura antes da serie" aria-hidden="true">
+            <span class="person-shape coach"></span>
+            <span class="person-shape client"></span>
+            <span class="tags"><span class="tag t1">postura</span><span class="tag t2">energia</span><span class="tag t3">expressao</span></span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> O ajuste nao comeca quando a serie da errado. Observe desde a chegada e confirme no aquecimento. <span class="source">Fonte: roteiro slide 8; roteiro mestre bloco 3.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-9" aria-labelledby="slide-9-title">
+      <header><span class="kicker">Bloco 3 - Perguntas uteis</span><span class="number">09 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-9-title">Pergunte sem virar interrogatorio</h2>
+          <ul class="bullets"><li>Sono e energia.</li><li>Rotina recente.</li><li>Desconforto incomum.</li><li>Disposicao para treinar.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="photo-panel" data-caption="pergunta breve" aria-hidden="true">
+            <span class="person-shape coach"></span>
+            <span class="person-shape client"></span>
+            <span class="tags"><span class="tag t1">sono?</span><span class="tag t2">energia?</span><span class="tag t3">algo incomum?</span></span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> A pergunta abre informacao util, mas nao transfere toda a decisao para o aluno. O personal escuta, observa e decide. <span class="source">Fonte: roteiro slide 9; criterios de tom.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-10" aria-labelledby="slide-10-title">
+      <header><span class="kicker">Bloco 3 - Aquecimento</span><span class="number">10 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-10-title">Aquecimento como validacao</h2>
+          <ul class="bullets"><li>Fluidez.</li><li>Controle.</li><li>Ritmo.</li><li>Confianca no movimento.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="watch-map">
+            <div class="figure" aria-hidden="true"><span class="marker one">ritmo</span><span class="marker two">controle</span><span class="marker three">amplitude</span></div>
+            <div class="cards">
+              <div class="card"><strong>Confirma</strong><span>Plano encaixa</span></div>
+              <div class="card"><strong>Alerta</strong><span>Plano pede ajuste</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> A serie leve prepara o corpo e mostra se o plano inicial combina com o estado do aluno naquele dia. <span class="source">Fonte: roteiro slide 10; roteiro mestre bloco 3.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-11" aria-labelledby="slide-11-title">
+      <header><span class="kicker">Bloco 3 - Contexto</span><span class="number">11 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-11-title">Antes de ajustar, classifique o contexto</h2>
+          <ul class="bullets"><li>Cansado.</li><li>Inseguro.</li><li>Desmotivado.</li><li>Tecnicamente limitado.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="matrix">
+            <div class="cell"><strong>Cansado</strong><span>Talvez recuperar ou reduzir.</span></div>
+            <div class="cell"><strong>Inseguro</strong><span>Talvez orientar e simplificar.</span></div>
+            <div class="cell"><strong>Desmotivado</strong><span>Talvez comunicar melhor a meta.</span></div>
+            <div class="cell"><strong>Limitado</strong><span>Talvez mudar a variacao.</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Situacoes diferentes podem parecer "peso alto", mas pedir ajustes diferentes. A leitura inicial reduz mudancas desnecessarias. <span class="source">Fonte: roteiro slide 11; fonte mestre secoes 3, 5 e 10.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-12" aria-labelledby="slide-12-title">
+      <header><span class="kicker">Bloco 4 - Intensidade</span><span class="number">12 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-12-title">Intensidade e demanda relativa</h2>
+          <ul class="bullets"><li>Nao e so carga externa.</li><li>Nao e so sensacao.</li><li>E relacao com o momento.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="energy-diagonal">
+            <div class="node">Carga</div>
+            <div class="node">Tecnica</div>
+            <div class="node">Prontidao</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Retome carga externa e resposta. RPE/RIR entram como ferramentas de conversa, nao como medidores absolutos. <span class="source">Fonte: roteiro slide 12; fonte mestre bloco 4.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-13" aria-labelledby="slide-13-title">
+      <header><span class="kicker">Bloco 4 - RPE</span><span class="number">13 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-13-title">RPE abre conversa</h2>
+          <ul class="bullets"><li>"Quao dificil foi?"</li><li>Esforco global.</li><li>Calibragem ao longo da aula.</li></ul>
+          <p class="principle">RPE calibra a conversa; nao decide sozinho.</p>
+        </div>
+        <div class="visual">
+          <div class="gauge"><div class="dial" data-label="RPE 7-9"></div></div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> RPE ajuda a entender a percepcao do aluno, mas nao decide sozinho. Em iniciantes, a escala tambem educa percepcao corporal. <span class="source">Fonte: roteiro slide 13; fonte mestre intensidade/RPE/RIR.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-14" aria-labelledby="slide-14-title">
+      <header><span class="kicker">Bloco 4 - RIR</span><span class="number">14 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-14-title">RIR aproxima da qualidade restante</h2>
+          <ul class="bullets"><li>"Quantas repeticoes boas sobrariam?"</li><li>Estimativa, nao matematica.</li><li>Relacao com o alvo da serie.</li></ul>
+          <p class="principle">RIR orienta a calibragem; nao e medida perfeita.</p>
+        </div>
+        <div class="visual">
+          <div class="photo-panel" data-caption="quantas boas sobrariam?" aria-hidden="true">
+            <span class="person-shape client"></span>
+            <span class="plate-shape"></span>
+            <span class="tag t2">+2 boas</span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> O ponto nao e acertar um numero perfeito, mas calibrar a proximidade da falha tecnica e o objetivo da serie. <span class="source">Fonte: roteiro slide 14; fonte mestre intensidade/RPE/RIR.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-15" aria-labelledby="slide-15-title">
+      <header><span class="kicker">Bloco 4 - Triangulacao</span><span class="number">15 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-15-title">Tecnica pode mudar a leitura</h2>
+          <ul class="bullets"><li>Relato do aluno.</li><li>Execucao observada.</li><li>Objetivo da serie.</li></ul>
+          <p class="principle">Se a tecnica contradiz o relato, reabra a decisao.</p>
+        </div>
+        <div class="visual">
+          <div class="matrix">
+            <div class="cell"><strong>Relato</strong><span>"Esta leve"</span></div>
+            <div class="cell"><strong>Tecnica</strong><span>Padrao degradando</span></div>
+            <div class="cell wide"><strong>Calibrar:</strong> educar a escala e reabrir a decisao</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Use conflitos: aluno diz que esta leve, mas perde padrao; aluno diz que esta pesado, mas controla bem. A tecnica nao desautoriza automaticamente o aluno; ela acrescenta criterio quando o autorrelato nao combina com a execucao. <span class="source">Fonte: roteiro slide 15; revisao transversal slide 15.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-16" aria-labelledby="slide-16-title">
+      <header><span class="kicker">Bloco 4 - Leitura combinada</span><span class="number">16 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-16-title">Leia por triangulacao</h2>
+          <ul class="bullets"><li>Percepcao.</li><li>Repeticoes de qualidade.</li><li>Padrao tecnico.</li><li>Contexto do dia.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="matrix">
+            <div class="cell"><strong>RPE</strong><span>Como sentiu?</span></div>
+            <div class="cell"><strong>RIR</strong><span>O que sobraria?</span></div>
+            <div class="cell"><strong>Tecnica</strong><span>Como executou?</span></div>
+            <div class="cell"><strong>Contexto</strong><span>O que mudou hoje?</span></div>
+            <div class="cell wide"><strong>Decisao tecnica</strong></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Nenhum indicador isolado manda na decisao. A proxima etapa e transformar essa leitura em ajuste agudo. <span class="source">Fonte: roteiro slide 16; criterios de operacionalidade.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-17" aria-labelledby="slide-17-title">
+      <header><span class="kicker">Bloco 5 - Matriz de decisao</span><span class="number">17 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-17-title">Da leitura para a acao</h2>
+          <p class="lead">A matriz orienta raciocinio, nao substitui julgamento profissional.</p>
+        </div>
+        <div class="visual">
+          <div class="cards">
+            <div class="card"><strong>Manter</strong><span>Alvo preservado</span></div>
+            <div class="card"><strong>Progredir</strong><span>Demanda baixa</span></div>
+            <div class="card"><strong>Reduzir</strong><span>Demanda alta</span></div>
+            <div class="card"><strong>Modificar</strong><span>Variacao nao serve</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Cada decisao e uma possibilidade contextual: manter, progredir, reduzir, recuperar, simplificar ou modificar. <span class="source">Fonte: roteiro slide 17; fonte mestre matriz de decisao.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-18" aria-labelledby="slide-18-title">
+      <header><span class="kicker">Bloco 5 - Manter</span><span class="number">18 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-18-title">Quando manter</h2>
+          <ul class="bullets"><li>Tecnica consistente.</li><li>Esforco perto do alvo.</li><li>Objetivo da serie preservado.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="matrix">
+            <div class="cell wide"><strong>Alvo atingido</strong></div>
+            <div class="cell"><strong>Tecnica</strong><span>Consistente</span></div>
+            <div class="cell"><strong>Esforco</strong><span>Perto do planejado</span></div>
+            <div class="cell wide"><strong>Decisao:</strong> manter a proposta</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Manter tambem e decisao tecnica. Nem toda serie precisa de progressao ou correcao. <span class="source">Fonte: roteiro slide 18; roteiro mestre bloco 5.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-19" aria-labelledby="slide-19-title">
+      <header><span class="kicker">Bloco 5 - Progredir</span><span class="number">19 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-19-title">Quando progredir</h2>
+          <ul class="bullets"><li>Tecnica boa.</li><li>Esforco abaixo do alvo.</li><li>Aumentar um desafio por vez.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="scale">
+            <div class="bar">base</div><div class="bar">boa</div><div class="bar">alvo</div><div class="bar">subir</div><div class="bar">cautela</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Apresente opcoes sem progressao automatica. Respeite o objetivo do exercicio e a resposta do aluno. <span class="source">Fonte: roteiro slide 19; fonte mestre secoes 6 e 10.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-20" aria-labelledby="slide-20-title">
+      <header><span class="kicker">Bloco 5 - Reduzir ou recuperar</span><span class="number">20 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-20-title">Quando reduzir ou recuperar</h2>
+          <ul class="bullets"><li>Tecnica oscilando.</li><li>Fluidez caindo.</li><li>Rendimento despencando entre series.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="split">
+            <div class="side"><h3>Reduzir</h3><p>Menor alvo ou menor demanda.</p></div>
+            <div class="side"><h3>Recuperar</h3><p>Mais intervalo antes da proxima serie.</p></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> As vezes o intervalo resolve; outras vezes a proxima serie precisa de menor alvo de repeticoes ou demanda menor. <span class="source">Fonte: roteiro slide 20; roteiro mestre bloco 5.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-21" aria-labelledby="slide-21-title">
+      <header><span class="kicker">Bloco 5 - Simplificar</span><span class="number">21 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-21-title">Quando simplificar ou modificar</h2>
+          <ul class="bullets"><li>Movimento instavel.</li><li>Padrao motor se perde.</li><li>Desconforto incomum.</li><li>Variacao mais estavel.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="shield-visual" aria-hidden="true"></div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Nao entre em diagnostico clinico. Se o exercicio nao entrega o objetivo com qualidade, mude a demanda ou a variacao. <span class="source">Fonte: roteiro slide 21; criterios de escopo.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-22" aria-labelledby="slide-22-title">
+      <header><span class="kicker">Bloco 5 - Principio central</span><span class="number">22 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-22-title">Menor mudanca suficiente</h2>
+          <ul class="bullets"><li>Identifique o problema dominante.</li><li>Mexa em uma variavel principal.</li><li>Reavalie a resposta.</li></ul>
+          <p class="principle">Ajuste agudo bom muda pouco, observa de novo e preserva criterio.</p>
+        </div>
+        <div class="visual">
+          <div class="mixer">
+            <div class="knob">peso</div>
+            <div class="knob active">reps</div>
+            <div class="knob">ritmo</div>
+            <div class="knob">intervalo</div>
+            <div class="knob">variacao</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Mudar peso, repeticoes, ritmo, amplitude e exercicio ao mesmo tempo atrapalha o aprendizado e esconde qual ajuste funcionou. <span class="source">Fonte: roteiro slide 22; fonte mestre secoes 3, 6 e 10.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-23" aria-labelledby="slide-23-title">
+      <header><span class="kicker">Bloco 6 - Fadiga</span><span class="number">23 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-23-title">Sinais sao pistas, nao diagnosticos</h2>
+          <ul class="bullets"><li>Observe o padrao.</li><li>Compare com o objetivo.</li><li>Evite conclusao automatica.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="photo-panel" data-caption="olhar profissional" aria-hidden="true">
+            <span class="person-shape coach"></span>
+            <span class="person-shape client"></span>
+            <span class="tags"><span class="tag t1">pe</span><span class="tag t2">joelho</span><span class="tag t3">tronco</span></span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> O personal nao mede percentuais exatos nem diagnostica fadiga. Ele reune pistas para decidir a proxima acao. <span class="source">Fonte: roteiro slide 23; criterios de operacionalidade.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-24" aria-labelledby="slide-24-title">
+      <header><span class="kicker">Bloco 6 - Sinais de fadiga</span><span class="number">24 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-24-title">Para onde olhar primeiro</h2>
+          <ul class="bullets"><li>Fluidez caiu?</li><li>Movimento ficou lento?</li><li>Padrao mudou?</li></ul>
+          <p class="principle">A observacao pode reforcar ou reabrir o autorrelato.</p>
+        </div>
+        <div class="visual">
+          <div class="photo-panel" data-caption="lentidao perceptivel" aria-hidden="true">
+            <span class="person-shape client"></span>
+            <span class="plate-shape"></span>
+            <span class="tags"><span class="tag t1">fluidez</span><span class="tag t2">pista, nao medida</span><span class="tag t3">padrao mudou?</span></span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Ensine o trainee a olhar para mudancas claras. Perda de fluidez sugere aumento de esforco, mas nao determina parada automatica. <span class="source">Fonte: roteiro slide 24; revisao transversal slide 24.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-25" aria-labelledby="slide-25-title">
+      <header><span class="kicker">Bloco 6 - Execucao</span><span class="number">25 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-25-title">Pistas de execucao</h2>
+          <ul class="bullets"><li>Compensacoes.</li><li>Amplitude encurtando.</li><li>Estabilidade menor.</li><li>Ritmo desorganizado.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="amplitude-compare">
+            <div class="pose good"></div>
+            <div class="pose short"></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Essas pistas importam quando aparecem de forma relevante para o objetivo do exercicio. Use exemplos orais conhecidos pela equipe. <span class="source">Fonte: roteiro slide 25; roteiro mestre bloco 6.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-26" aria-labelledby="slide-26-title">
+      <header><span class="kicker">Bloco 6 - Contexto</span><span class="number">26 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-26-title">Pistas de contexto</h2>
+          <ul class="bullets"><li>Expressao mudou.</li><li>Respiracao desorganizou.</li><li>Hesitacao incomum.</li><li>Pergunte e observe.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="watch-map">
+            <div class="figure" aria-hidden="true"><span class="marker one">joelho</span><span class="marker two">tronco</span><span class="marker three">ritmo</span></div>
+            <div class="cards">
+              <div class="card"><strong>Ver</strong><span>Pistas tecnicas</span></div>
+              <div class="card"><strong>Checar</strong><span>Contexto com o aluno</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Sinais comportamentais compoem o quadro, mas nao decidem sozinhos. A pergunta breve calibra a leitura sem interromper demais. <span class="source">Fonte: roteiro slide 26; fonte mestre secoes 7, 8 e 10.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-27" aria-labelledby="slide-27-title">
+      <header><span class="kicker">Bloco 7 - Comunicacao</span><span class="number">27 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-27-title">Ajuste precisa de fala profissional</h2>
+          <ul class="bullets"><li>Diga o que viu.</li><li>Explique o motivo.</li><li>Conduza a proxima acao.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="photo-panel" data-caption="comunicacao segura" aria-hidden="true">
+            <span class="person-shape coach"></span>
+            <span class="person-shape client"></span>
+            <span class="tags"><span class="tag t1">o que vi</span><span class="tag t2">por que ajustar</span><span class="tag t3">proxima acao</span></span>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> A forma de comunicar influencia confianca e aderencia. O trainee nao precisa pedir permissao para toda decisao tecnica. <span class="source">Fonte: roteiro slide 27; criterios de comunicacao.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-28" aria-labelledby="slide-28-title">
+      <header><span class="kicker">Bloco 7 - Frases profissionais</span><span class="number">28 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-28-title">Frases que sustentam criterio</h2>
+          <ul class="bullets"><li>"Notei que o ritmo mudou..."</li><li>"Para manter a tecnica..."</li><li>"Vamos ajustar a proxima serie..."</li></ul>
+        </div>
+        <div class="visual">
+          <div class="flow">
+            <div class="step"><strong>Observei</strong><span>Notei que o ritmo mudou</span></div>
+            <div class="step"><strong>Motivo</strong><span>Para manter a tecnica</span></div>
+            <div class="step"><strong>Acao</strong><span>Vamos ajustar a proxima serie</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Leia as frases como modelos de estrutura, nao como script rigido. A fala combina observacao, motivo tecnico e decisao. <span class="source">Fonte: roteiro slide 28; criterios de linguagem.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-29" aria-labelledby="slide-29-title">
+      <header><span class="kicker">Bloco 7 - Evitar</span><span class="number">29 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-29-title">Frases que passam inseguranca</h2>
+          <ul class="bullets"><li>"Nao sei se esta certo..."</li><li>"Parece que ficou ruim..."</li><li>"A ciencia diz que tem que..."</li></ul>
+        </div>
+        <div class="visual">
+          <div class="phrase-grid">
+            <div class="phrase bad">Talvez a gente tente baixar...</div>
+            <div class="phrase good">Observei perda de fluidez. Vamos reduzir um pouco.</div>
+            <div class="phrase bad">Acho que voce nao consegue.</div>
+            <div class="phrase good">Hoje a melhor decisao e simplificar a variacao.</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Mostre como reescrever falas fracas. O ajuste deve soar como decisao tecnica proporcional, nao tentativa aleatoria. <span class="source">Fonte: roteiro slide 29; criterios de comunicacao.</span></aside>
+    </section>
+
+    <section class="slide light" id="slide-30" aria-labelledby="slide-30-title">
+      <header><span class="kicker">Bloco 8 - Sintese</span><span class="number">30 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-30-title">O raciocinio completo</h2>
+          <ul class="bullets"><li>Ler o contexto.</li><li>Observar a execucao.</li><li>Cruzar relato e tecnica.</li><li>Ajustar com criterio.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="flow four">
+            <div class="step"><strong>Ler</strong><span>Prontidao</span></div>
+            <div class="step"><strong>Observar</strong><span>Execucao</span></div>
+            <div class="step"><strong>Cruzar</strong><span>Relato + tecnica</span></div>
+            <div class="step"><strong>Ajustar</strong><span>Menor mudanca</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Revise os blocos sem voltar a explicar cada conceito. Mostre a cadeia de decisao completa. <span class="source">Fonte: roteiro slide 30; roteiro mestre bloco 8.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-31" aria-labelledby="slide-31-title">
+      <header><span class="kicker">Bloco 8 - Escopo</span><span class="number">31 / 32</span></header>
+      <div class="body">
+        <div>
+          <h2 id="slide-31-title">O que fica fora desta aula</h2>
+          <ul class="bullets"><li>Fora do foco: periodizacao.</li><li>Fora do foco: clinica.</li><li>Fora do foco: alto rendimento.</li><li>Fora do foco: controle historico.</li></ul>
+        </div>
+        <div class="visual">
+          <div class="scope-map">
+            <div class="center">Ajuste agudo da sessao</div>
+            <div class="out o1">periodizacao</div>
+            <div class="out o2">clinica</div>
+            <div class="out o3">alto rendimento</div>
+            <div class="out o4">registro</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Esses temas podem ser importantes em outros momentos, mas aqui o foco e ajuste agudo durante a sessao com publico geral. <span class="source">Fonte: roteiro slide 31; criterios de escopo.</span></aside>
+    </section>
+
+    <section class="slide" id="slide-32" aria-labelledby="slide-32-title">
+      <header><span class="kicker">Bloco 8 - Sintese final</span><span class="number">32 / 32</span></header>
+      <div class="body single">
+        <div>
+          <h2 id="slide-32-title">Pergunta-guia final</h2>
+          <ul class="bullets"><li>O que esta acontecendo agora?</li><li>Qual a menor mudanca suficiente?</li><li>A intensidade ficou adequada ao aluno?</li></ul>
+        </div>
+        <div class="visual">
+          <div class="x-symbol"><strong>Decida agora. Ajuste o minimo.</strong></div>
+        </div>
+      </div>
+      <aside class="notes"><b>Nota do professor</b> Feche reforcando que o bom personal nao muda por ansiedade nem ignora sinais claros. Ele le a sessao, escolhe uma acao proporcional e comunica com seguranca. <span class="source">Fonte: roteiro slide 32; roteiro mestre bloco 8.</span></aside>
+    </section>
+  </main>
+</body>
+</html>

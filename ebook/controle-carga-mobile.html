@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle de Carga - Ebook Mobile</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --black: #000000;
+      --graphite: #0b0b0b;
+      --graphite-2: #151515;
+      --graphite-3: #242628;
+      --paper: #f2f3f6;
+      --surface: #ffffff;
+      --ink: #111315;
+      --muted: #58616a;
+      --line: #d4dbe0;
+      --lime: #dfff2f;
+      --lime-deep: #6e8600;
+      --blue: #2f6f9f;
+      --amber: #f3b646;
+      --danger: #d75f4f;
+      --radius: 8px;
+      --shadow: 0 18px 48px rgba(17, 19, 21, 0.12);
+      --measure: 720px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.62;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; }
+    p, li { font-size: 1.02rem; }
+    p { margin: 0 0 0.95rem; }
+    ul, ol { margin: 0.25rem 0 1rem; padding-left: 1.25rem; }
+    li + li { margin-top: 0.36rem; }
+    strong { font-weight: 800; }
+    code {
+      padding: 0.08rem 0.28rem;
+      background: #e5ebef;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 1.5rem 0; }
+
+    .progress {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: rgba(17, 19, 21, 0.1);
+    }
+    .progress span { display: block; width: 0; height: 100%; background: var(--lime); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--graphite);
+      color: #fff;
+      padding: 38px 18px 30px;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -90px;
+      top: -80px;
+      width: 260px;
+      height: 220px;
+      background: linear-gradient(135deg, transparent 0 40%, rgba(223, 255, 47, 0.92) 40% 58%, transparent 58%);
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+    .hero-inner { width: min(var(--measure), 100%); margin: 0 auto; position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 5px 10px;
+      background: var(--lime);
+      color: #111315;
+      font-size: 0.74rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .hero h1 {
+      margin: 18px 0 12px;
+      max-width: 10ch;
+      font-size: clamp(2.25rem, 9vw, 4.6rem);
+      line-height: 0.94;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .hero .lead {
+      max-width: 680px;
+      color: #dce3e8;
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+    .hero .question {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--lime);
+      color: #111315;
+      border-radius: var(--radius);
+      font-size: 1.08rem;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .layout {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 230px) minmax(0, var(--measure));
+      gap: 28px;
+      align-items: start;
+      padding: 22px 0 64px;
+    }
+    .toc {
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      padding: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .toc h2 {
+      margin: 0 0 10px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .toc a {
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      min-height: 44px;
+      padding: 8px 0;
+      border-top: 1px solid #edf1f4;
+      color: #253039;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.25;
+      text-decoration: none;
+    }
+    .toc a span {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      background: var(--graphite);
+      color: var(--lime);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    main { min-width: 0; }
+    .quick-guides, .intro, .chapter {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .intro, .quick-guides { padding: 22px; margin-bottom: 18px; }
+    .intro h1 { margin: 0 0 14px; font-size: 1.55rem; line-height: 1.12; }
+    .intro > p:first-of-type { color: var(--muted); font-weight: 700; }
+
+    .quick-guides h2 {
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+      line-height: 1.15;
+      text-transform: uppercase;
+    }
+    .quick-guides > p { color: var(--muted); font-weight: 700; }
+    .guide-grid, .micro-grid, .phrase-bank {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .guide-card, .micro-card, .phrase-card, .decision-card {
+      min-width: 0;
+      padding: 14px;
+      background: #f8fafb;
+      border: 1px solid #dfe6eb;
+      border-left: 6px solid var(--lime);
+      border-radius: var(--radius);
+    }
+    .guide-card h3, .micro-card h3, .phrase-card h3, .decision-card h4 {
+      margin: 0 0 8px;
+      font-size: 0.93rem;
+      line-height: 1.22;
+      text-transform: uppercase;
+    }
+    .guide-card p, .micro-card p, .phrase-card p, .decision-card p { margin-bottom: 0.55rem; }
+
+    .chapter { margin-bottom: 22px; overflow: hidden; }
+    .chapter-head {
+      position: relative;
+      overflow: hidden;
+      padding: 24px 22px;
+      background: var(--graphite);
+      color: #fff;
+    }
+    .chapter-head::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -50px;
+      width: 190px;
+      height: 150px;
+      background: linear-gradient(135deg, transparent 0 42%, rgba(223, 255, 47, 0.75) 42% 59%, transparent 59%);
+      transform: rotate(-8deg);
+    }
+    .chapter-kicker {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 5px 9px;
+      background: var(--lime);
+      color: #111315;
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .chapter h2 {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+      margin: 14px 0 0;
+      font-size: clamp(1.65rem, 5.6vw, 2.65rem);
+      line-height: 1.02;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .content-block { padding: 18px 22px; border-top: 1px solid #e5ebef; }
+    .content-block h3 {
+      margin: 0 0 11px;
+      color: #1a2229;
+      font-size: 0.92rem;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+    .central-idea {
+      background: #111315;
+      color: #fff;
+      border-top: 0;
+      border-left: 8px solid var(--lime);
+    }
+    .central-idea h3 { color: var(--lime); }
+    .central-idea p { font-size: 1.18rem; font-weight: 900; line-height: 1.38; }
+    .definition, .observe, .recap { background: #f5f8fa; }
+    .observe blockquote, .intro blockquote {
+      margin: 0.4rem 0 0.85rem;
+      padding: 14px;
+      background: var(--lime);
+      border-radius: var(--radius);
+      color: #111315;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+    blockquote { margin: 0.5rem 0 1rem; padding-left: 14px; border-left: 5px solid var(--lime); }
+    blockquote p { margin: 0; font-weight: 800; }
+    .checklist ul, .recap ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .checklist li, .recap li {
+      position: relative;
+      padding: 0.55rem 0 0.55rem 2rem;
+      border-top: 1px solid #e8eef2;
+    }
+    .checklist li::before, .recap li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.76rem;
+      width: 13px;
+      height: 13px;
+      background: var(--lime);
+      transform: skew(-18deg);
+    }
+    .phrases p {
+      padding: 12px 14px;
+      background: #f8fafb;
+      border-left: 5px solid var(--lime);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-weight: 800;
+    }
+    .caution { border-left: 8px solid var(--amber); background: #fffaf0; }
+    .decision-card { margin: 12px 0; background: #fff; }
+    .decision-card h4 { color: #111315; }
+
+    .appendix .chapter-head { background: #ffffff; color: var(--ink); border-bottom: 1px solid var(--line); }
+    .appendix .chapter-head::after { opacity: 0.22; }
+    .appendix .chapter-kicker { background: var(--graphite); color: var(--lime); }
+
+    .back-top {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 15;
+      display: inline-grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      color: #111315;
+      background: var(--lime);
+      border: 1px solid rgba(17, 19, 21, 0.18);
+      border-radius: var(--radius);
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 860px) {
+      .layout { width: min(100% - 20px, 720px); grid-template-columns: 1fr; gap: 14px; padding-top: 12px; }
+      .toc { position: static; max-height: none; box-shadow: none; }
+      .toc nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
+      .guide-grid, .micro-grid, .phrase-bank { grid-template-columns: 1fr; }
+      .hero { padding-top: 34px; }
+      .intro, .quick-guides, .content-block { padding: 18px; }
+      .chapter-head { padding: 22px 18px; }
+    }
+
+    @media (max-width: 520px) {
+      p, li { font-size: 1rem; }
+      .hero h1 { max-width: 9ch; }
+      .toc nav { grid-template-columns: 1fr; }
+      .quick-guides, .intro, .chapter { border-radius: 0; }
+      .layout { width: 100%; padding-left: 0; padding-right: 0; }
+      .toc { margin: 0 10px; }
+      .back-top { width: 44px; height: 44px; }
+    }
+
+    @page { size: A4; margin: 14mm; }
+    @media print {
+      .progress, .toc, .back-top { display: none !important; }
+      body { background: #fff !important; color: #111 !important; }
+      .hero { padding: 0 0 14mm; background: #fff !important; color: #111 !important; }
+      .hero::after, .chapter-head::after { display: none !important; }
+      .hero-inner, .layout { width: 100%; display: block; padding: 0; }
+      .hero .lead { color: #333 !important; }
+      .hero .question, .eyebrow, .chapter-kicker { border: 1px solid #111; background: #fff !important; color: #111 !important; }
+      .intro, .quick-guides, .chapter { box-shadow: none !important; border: 0; break-inside: auto; page-break-inside: auto; }
+      .chapter { page-break-before: always; }
+      .chapter-head { background: #fff !important; color: #111 !important; padding: 0 0 8mm; }
+      .content-block, .guide-card, .micro-card, .phrase-card, .decision-card { break-inside: avoid; page-break-inside: avoid; }
+      h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+      a { color: inherit; text-decoration: underline; }
+      .central-idea { background: #fff !important; color: #111 !important; border: 1px solid #111; }
+      .central-idea h3 { color: #111 !important; }
+      .observe blockquote, .intro blockquote { background: #fff !important; border: 1px solid #111; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+  <header class="hero" id="topo">
+    <div class="hero-inner">
+      <span class="eyebrow">Ebook mobile-first</span>
+      <h1>Controle de Carga</h1>
+      <p class="lead">Material de estudo e consulta rapida para trainees de Educacao Fisica em formacao interna para atuacao como personal trainer.</p>
+      <p class="question">Pergunta-guia: o que esta acontecendo agora e qual e a menor mudanca que adequa a intensidade ao aluno?</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc" aria-label="Indice do ebook">
+      <h2>Indice</h2>
+      <nav>
+        <a href="#capitulo-1"><span>1</span>Por que controlar carga dentro da sessao</a>
+<a href="#capitulo-2"><span>2</span>Carga, intensidade e resposta: o vocabulario minimo</a>
+<a href="#capitulo-3"><span>3</span>Leitura inicial: antes de mexer na carga</a>
+<a href="#capitulo-4"><span>4</span>Intensidade na pratica: RPE/RIR e qualidade tecnica</a>
+<a href="#capitulo-5"><span>5</span>Da leitura ao ajuste: manter, progredir, reduzir ou modificar</a>
+<a href="#capitulo-6"><span>6</span>Sinais de fadiga durante a execucao</a>
+<a href="#capitulo-7"><span>7</span>Comunicacao profissional do ajuste</a>
+<a href="#capitulo-8"><span>8</span>Checklist final de raciocinio</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="quick-guides" aria-labelledby="atalhos-operacionais">
+        <h2 id="atalhos-operacionais">Atalhos operacionais</h2>
+        <p>Cards de consulta rapida para revisar os conceitos que aparecem ao longo dos capitulos.</p>
+        <div class="guide-grid" aria-label="Carga externa e carga interna">
+          <article class="guide-card"><h3>Carga externa</h3><p>O que o personal manipula: peso, repeticoes, series, amplitude, ritmo, intervalo e variacao do exercicio.</p></article>
+          <article class="guide-card"><h3>Carga interna</h3><p>O que o aluno responde: esforco percebido, fadiga, prontidao, tolerancia, fluidez e qualidade tecnica.</p></article>
+        </div>
+        <div class="micro-grid" aria-label="RPE RIR e tecnica">
+          <article class="micro-card"><h3>RPE</h3><p>Conversa sobre esforco percebido. Ajuda a calibrar intensidade, mas nao decide sozinho.</p></article>
+          <article class="micro-card"><h3>RIR</h3><p>Estimativa de repeticoes com qualidade ainda possiveis antes da falha tecnica.</p></article>
+          <article class="micro-card"><h3>Tecnica</h3><p>Confirma ou contradiz o relato: fluidez, amplitude, estabilidade, ritmo e compensacoes.</p></article>
+          <article class="micro-card"><h3>Decisao aguda</h3><p>Escolha entre manter, progredir, reduzir, recuperar, simplificar ou modificar.</p></article>
+        </div>
+        <div class="phrase-bank" aria-label="Frases profissionais de comunicacao">
+          <article class="phrase-card"><h3>Observacao</h3><p>"Notei que o ritmo do movimento mudou."</p></article>
+          <article class="phrase-card"><h3>Motivo</h3><p>"Quero preservar a qualidade tecnica que buscamos."</p></article>
+          <article class="phrase-card"><h3>Acao</h3><p>"Vou ajustar a demanda da proxima serie."</p></article>
+          <article class="phrase-card"><h3>Cautela</h3><p>Sinais de fadiga sao pistas operacionais, nao diagnosticos.</p></article>
+        </div>
+      </section>
+<section class="intro" id="inicio">
+<h1>Ebook Mobile Controle de Carga</h1>
+<p>Status de auditoria: rascunho local aguardando rodada NotebookLM.</p>
+<p>Este ebook foi criado para estudo e consulta rapida de trainees de Educacao Fisica em formacao interna para atuacao como personal trainer.</p>
+<p>O foco e o ajuste agudo da demanda do exercicio durante a sessao. A pergunta central e simples:</p>
+<blockquote>
+<p>O que esta acontecendo agora e qual e a menor mudanca que adequa a intensidade ao aluno?</p>
+</blockquote>
+<p>Este material nao substitui pratica supervisionada. Ele organiza o raciocinio para que o trainee observe melhor, interprete com mais criterio e comunique ajustes com seguranca profissional.</p>
+</section>
+<section class="chapter appendix" id="como-usar-este-ebook">
+<header class="chapter-head"><span class="chapter-kicker">Anexo</span><h2>Como usar este ebook</h2></header>
+<p>Leia um capitulo por vez.</p>
+<p>Depois de cada capitulo, tente responder:</p>
+<ul>
+<li>O que eu devo observar?</li>
+<li>O que essa observacao pode significar?</li>
+<li>Qual ajuste eu consideraria na proxima serie?</li>
+<li>Como eu comunicaria isso ao aluno?</li>
+</ul>
+<p>As listas e cards deste ebook nao sao algoritmos rigidos. Eles servem para orientar julgamento profissional em tempo real.</p>
+<hr>
+</section>
+<section class="chapter" id="capitulo-1">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 1</span><h2>Por que controlar carga dentro da sessao</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve entender por que o controle de carga nao termina quando a ficha esta pronta.</p>
+<p>Voce tambem deve reconhecer que ajustar durante a sessao nao e improvisar sem criterio. E uma parte normal da conducao profissional quando a resposta real do aluno nao combina exatamente com o plano inicial.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>A ficha orienta, mas a sessao real calibra a decisao.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>O treino planejado e o ponto de partida. Ele organiza exercicios, cargas, repeticoes, intervalos e objetivos.</p>
+<p>Mas o aluno nao chega sempre igual. Sono, rotina, estresse, alimentacao, experiencia tecnica, inseguranca e desconfortos incomuns podem mudar a forma como ele responde ao mesmo exercicio.</p>
+<p>Por isso, controlar carga dentro da sessao significa comparar o que foi proposto com o que esta acontecendo agora.</p>
+<p>Uma mesma carga externa pode ser adequada em um dia e excessiva em outro. Tambem pode ficar leve demais quando o aluno chega melhor, mais confiante ou mais adaptado ao exercicio.</p>
+<p>O trainee precisa aprender a ajustar sem parecer perdido. A decisao deve mostrar criterio: observar, interpretar, escolher a menor mudanca suficiente e comunicar com clareza.</p>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>Ajuste agudo</strong> e a mudanca feita durante a propria sessao para adequar a demanda do exercicio a resposta atual do aluno.</p>
+<p>Pode envolver peso, repeticoes, amplitude, ritmo, intervalo, variacao do exercicio ou ate a decisao de manter tudo como esta.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Antes de mudar a carga, pergunte:</p>
+<blockquote>
+<p>O plano esta falhando ou a sessao esta me dando uma informacao nova?</p>
+</blockquote>
+<p>Essa pergunta evita duas falhas comuns:</p>
+<ul>
+<li>mudar por ansiedade antes de observar;</li>
+<li>insistir no plano mesmo quando a resposta do aluno pede recalibragem.</li>
+</ul>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<p>Use a ficha como referencia, nao como prisao.</p>
+<p>Se a resposta do aluno combina com o objetivo do exercicio, manter pode ser a melhor decisao.</p>
+<p>Se a tecnica esta boa e o esforco esta abaixo do alvo, talvez seja possivel progredir.</p>
+<p>Se a execucao esta perdendo qualidade ou o esforco ficou acima do esperado, talvez seja preciso reduzir, recuperar, simplificar ou modificar.</p>
+<p>O ponto nao e mudar sempre. O ponto e decidir com base no que voce observa.</p>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Um aluno estava previsto para fazer 3 series de 10 repeticoes no leg press com uma carga ja usada na semana anterior.</p>
+<p>Na primeira serie efetiva, ele completa as repeticoes, mas o ritmo fica lento cedo, a amplitude encurta nas ultimas repeticoes e ele relata que o esforco ficou muito acima do esperado.</p>
+<p>O problema nao e necessariamente a ficha estar errada. A sessao mostrou que, hoje, aquela demanda pode estar acima do alvo.</p>
+<p>Uma boa decisao pode ser reduzir um pouco a carga ou ajustar o numero de repeticoes da proxima serie para preservar qualidade tecnica.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>O aluno chegou em estado parecido com o habitual?</li>
+<li>O aquecimento confirmou a prontidao esperada?</li>
+<li>A primeira exposicao ao exercicio combinou com o alvo da serie?</li>
+<li>A tecnica sustentou a proposta?</li>
+<li>Existe uma mudanca pequena capaz de resolver o problema dominante?</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frase profissional</h3>
+<p>"Hoje a resposta esta um pouco diferente do planejado. Vou ajustar a proxima serie para mantermos a qualidade do exercicio."</p>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>Ajustar nao significa trocar tudo o tempo todo.</p>
+<p>Mudancas excessivas podem atrapalhar aprendizado motor, referencia de progressao e confianca do aluno. Ajuste quando houver motivo tecnico claro.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Para lembrar:</p>
+<ul>
+<li>a ficha orienta;</li>
+<li>a resposta do aluno calibra;</li>
+<li>ajuste nao e improviso quando nasce de observacao;</li>
+<li>a melhor mudanca costuma ser a menor mudanca suficiente.</li>
+</ul>
+<hr>
+</div>
+</section>
+<section class="chapter" id="capitulo-2">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 2</span><h2>Carga, intensidade e resposta: o vocabulario minimo</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve diferenciar carga externa, carga interna e intensidade na pratica.</p>
+<p>Voce tambem deve entender por que controlar carga nao e apenas escolher o peso no aparelho.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>Controlar carga e ajustar a relacao entre o que o personal propoe e o que o corpo do aluno mostra.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>A carga externa e o que o personal manipula. Ela inclui peso, series, repeticoes, amplitude, ritmo, intervalo, ordem dos exercicios e escolha da variacao.</p>
+<p>A carga interna e a resposta do aluno a essa proposta. Ela aparece no esforco percebido, na fadiga, na prontidao, na tolerancia, na fluidez do movimento e na qualidade tecnica.</p>
+<p>Intensidade, neste contexto, nao deve ser entendida apenas como peso alto.</p>
+<p>Uma carga pode ser intensa para um aluno iniciante e moderada para outro mais treinado. A mesma carga pode ser leve em um dia e pesada em outro, dependendo da condicao atual.</p>
+<p>Por isso, o trainee precisa aprender a olhar para a relacao entre proposta e resposta.</p>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>Carga externa:</strong> aquilo que voce prescreve ou manipula.</p>
+<p>Exemplos: peso, repeticoes, series, amplitude, ritmo, intervalo e variacao do exercicio.</p>
+<p><strong>Carga interna ou resposta:</strong> aquilo que o aluno apresenta diante da carga externa.</p>
+<p>Exemplos: esforco percebido, fadiga, prontidao, tolerancia, fluidez e tecnica.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Antes de mexer no peso, pergunte:</p>
+<blockquote>
+<p>O problema esta na carga externa ou na resposta que essa carga esta gerando hoje?</p>
+</blockquote>
+<p>Essa distincao muda a decisao.</p>
+<p>As vezes o peso esta adequado, mas o ritmo precisa ser melhor controlado.</p>
+<p>As vezes a carga nao precisa subir, porque a tecnica ainda nao sustenta maior desafio.</p>
+<p>As vezes a carga precisa cair, mesmo que o aluno consiga completar as repeticoes.</p>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<p>Quando voce observar a serie, separe a leitura em duas camadas.</p>
+<p><strong>Camada 1 - O que foi entregue</strong></p>
+<ul>
+<li>peso usado;</li>
+<li>repeticoes planejadas;</li>
+<li>amplitude pedida;</li>
+<li>ritmo combinado;</li>
+<li>intervalo realizado;</li>
+<li>variacao do exercicio.</li>
+</ul>
+<p><strong>Camada 2 - O que o aluno mostrou</strong></p>
+<ul>
+<li>esforco relatado;</li>
+<li>fluidez do movimento;</li>
+<li>estabilidade;</li>
+<li>amplitude real;</li>
+<li>compensacoes;</li>
+<li>respiracao e ritmo;</li>
+<li>confianca na execucao.</li>
+</ul>
+<p>Depois, compare as duas camadas.</p>
+<p>Se a carga externa parece baixa e a resposta esta controlada, progredir pode fazer sentido.</p>
+<p>Se a carga externa parece adequada e a resposta esta dentro do alvo, manter pode ser a decisao mais profissional.</p>
+<p>Se a resposta mostra perda de qualidade, a carga externa precisa ser revista.</p>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Duas alunas fazem remada com o mesmo peso.</p>
+<p>A primeira executa com controle, amplitude estavel e relata esforco moderado. A segunda completa as repeticoes, mas perde postura, encurta a amplitude e relata esforco muito alto.</p>
+<p>O peso e igual, mas a intensidade relativa nao e igual.</p>
+<p>Para a primeira, talvez seja possivel manter ou progredir. Para a segunda, talvez seja melhor reduzir carga, ajustar amplitude, mudar ritmo ou simplificar a variacao.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>Qual variavel externa esta sendo manipulada agora?</li>
+<li>O esforco relatado combina com o objetivo da serie?</li>
+<li>A execucao confirma ou contradiz o relato do aluno?</li>
+<li>A intensidade esta adequada para o nivel tecnico atual?</li>
+<li>O ajuste deve mexer em peso, repeticoes, amplitude, ritmo, intervalo ou variacao?</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frase profissional</h3>
+<p>"O peso e apenas uma parte da carga. Quero ver se a resposta do movimento combina com o objetivo desta serie."</p>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>Nao reduza controle de carga a "aumentar peso quando esta facil".</p>
+<p>Carga tambem muda quando voce altera ritmo, amplitude, intervalo, repeticoes ou variacao do exercicio.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Mini glossario:</p>
+<ul>
+<li>carga externa: o que voce manipula;</li>
+<li>carga interna: o que o aluno responde;</li>
+<li>intensidade: demanda relativa ao aluno naquele momento;</li>
+<li>ajuste agudo: decisao feita durante a sessao para alinhar proposta e resposta.</li>
+</ul>
+<hr>
+</div>
+</section>
+<section class="chapter" id="capitulo-3">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 3</span><h2>Leitura inicial: antes de mexer na carga</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve saber usar o inicio da sessao, o aquecimento e as primeiras exposicoes ao exercicio como fontes de leitura.</p>
+<p>O objetivo e evitar ajustes apressados e preparar decisoes mais seguras antes das series efetivas.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>A decisao sobre intensidade comeca antes da troca de peso.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>O aluno comeca a mostrar informacoes antes da primeira serie pesada.</p>
+<p>O modo como ele chega, responde ao aquecimento, organiza o movimento e relata sensacoes iniciais ajuda a calibrar a sessao.</p>
+<p>Essa leitura nao precisa virar interrogatorio. O trainee deve fazer perguntas curtas, observar comportamento e comparar com o padrao esperado para aquele aluno.</p>
+<p>Prontidao nao e diagnostico. E uma leitura operacional do estado atual para decidir se a proposta do dia ainda faz sentido.</p>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>Prontidao</strong> e o estado imediato do aluno para treinar naquele dia.</p>
+<p>Ela pode ser influenciada por sono, rotina recente, alimentacao, estresse, cansaco, desconforto incomum e confianca com o exercicio.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Antes da primeira serie efetiva, pergunte:</p>
+<blockquote>
+<p>O aquecimento confirmou que a proposta inicial ainda e adequada para hoje?</p>
+</blockquote>
+<p>Se a resposta for incerta, use a primeira serie como teste de leitura, nao como momento para provar que a ficha precisa ser mantida a qualquer custo.</p>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<p>Observe tres momentos.</p>
+<p><strong>Antes do exercicio</strong></p>
+<ul>
+<li>o aluno parece muito diferente do habitual?</li>
+<li>relata cansaco incomum?</li>
+<li>menciona desconforto que muda a decisao?</li>
+<li>parece inseguro com o exercicio?</li>
+</ul>
+<p><strong>Durante o aquecimento</strong></p>
+<ul>
+<li>o movimento esta fluido?</li>
+<li>a amplitude aparece sem compensacao?</li>
+<li>o ritmo esta organizado?</li>
+<li>o aluno entende o comando?</li>
+</ul>
+<p><strong>Na primeira exposicao mais proxima da serie efetiva</strong></p>
+<ul>
+<li>o esforco subiu mais rapido que o esperado?</li>
+<li>a tecnica sustentou a carga?</li>
+<li>o aluno ainda parece pronto para o alvo planejado?</li>
+</ul>
+<p>Com essas informacoes, escolha se deve manter a proposta, aquecer mais, reduzir a entrada, simplificar a variacao ou modificar a tarefa.</p>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Um aluno chega dizendo que dormiu pouco, mas quer treinar.</p>
+<p>No aquecimento de agachamento, ele entende os comandos, mas esta mais lento, hesita antes de descer e perde estabilidade com uma carga que normalmente seria leve.</p>
+<p>Voce nao precisa transformar isso em diagnostico. Tambem nao precisa cancelar automaticamente o exercicio.</p>
+<p>Uma decisao possivel e reduzir a carga inicial, aumentar o cuidado com a amplitude e observar a primeira serie efetiva antes de decidir progressao.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>O estado do aluno mudou em relacao ao habitual?</li>
+<li>O aquecimento foi coerente com a proposta da ficha?</li>
+<li>A primeira exposicao mostrou controle tecnico?</li>
+<li>O aluno precisa de mais preparacao antes da serie efetiva?</li>
+<li>A decisao mais simples e manter, ajustar entrada, simplificar ou modificar?</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frase profissional</h3>
+<p>"Vou usar esta primeira serie para confirmar como o corpo responde hoje antes de decidir se progredimos."</p>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>Perguntar demais pode transmitir inseguranca ou cansar o aluno.</p>
+<p>Prefira perguntas curtas, observacao objetiva e comandos claros. O trainee deve colher informacao sem transformar a sessao em entrevista longa.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Antes de ajustar, observe:</p>
+<ul>
+<li>estado geral;</li>
+<li>aquecimento;</li>
+<li>primeiras repeticoes;</li>
+<li>relato do aluno;</li>
+<li>tecnica real.</li>
+</ul>
+<p>O ajuste fica melhor quando nasce dessa leitura inicial.</p>
+<hr>
+</div>
+</section>
+<section class="chapter" id="capitulo-4">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 4</span><h2>Intensidade na pratica: RPE/RIR e qualidade tecnica</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve usar RPE, RIR e qualidade tecnica como ferramentas combinadas de leitura.</p>
+<p>Voce tambem deve reconhecer os limites dessas ferramentas, especialmente com alunos iniciantes.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>RPE e RIR ajudam, mas a decisao melhora quando sao cruzados com a qualidade da execucao.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>RPE e uma forma de perguntar como o aluno percebe o esforco.</p>
+<p>RIR e uma forma de estimar quantas repeticoes de qualidade ainda seriam possiveis antes da falha tecnica.</p>
+<p>Essas escalas ajudam o personal a conversar sobre intensidade, mas nao devem ser tratadas como medidas perfeitas.</p>
+<p>Iniciantes podem subestimar ou superestimar o proprio esforco. Podem dizer que ainda fariam muitas repeticoes, mesmo quando a tecnica ja esta instavel. Tambem podem relatar esforco alto por inseguranca, falta de familiaridade ou desconforto com o exercicio.</p>
+<p>Por isso, a leitura precisa juntar relato, fluidez, amplitude, estabilidade, ritmo e objetivo da serie.</p>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>RPE:</strong> percepcao subjetiva de esforco. Ajuda a entender como o aluno sentiu a serie.</p>
+<p><strong>RIR:</strong> repeticoes em reserva. E a estimativa de quantas repeticoes com qualidade ainda seriam possiveis.</p>
+<p><strong>Falha tecnica:</strong> ponto em que o aluno nao sustenta o padrao de execucao necessario para o objetivo do exercicio.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Depois da serie, pergunte:</p>
+<blockquote>
+<p>O que o aluno relatou combina com o que a execucao mostrou?</p>
+</blockquote>
+<p>Quando relato e execucao apontam para a mesma direcao, a decisao fica mais simples.</p>
+<p>Quando eles entram em conflito, a tecnica deve ganhar peso importante, sempre integrada ao contexto.</p>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<p>Use quatro perguntas.</p>
+<p><strong>1. O esforco relatado esta dentro do alvo?</strong></p>
+<p>Se a serie deveria ser moderada e o aluno relata esforco maximo, investigue antes de progredir.</p>
+<p><strong>2. Quantas repeticoes de qualidade pareciam possiveis?</strong></p>
+<p>Nao pense apenas em completar repeticoes. Pense em repeticoes com padrao aceitavel.</p>
+<p><strong>3. A tecnica melhorou, sustentou ou piorou ao longo da serie?</strong></p>
+<p>Perda de controle pode indicar que a demanda esta alta demais para o objetivo atual.</p>
+<p><strong>4. O aluno entende a escala?</strong></p>
+<p>Se o aluno ainda nao sabe estimar RPE ou RIR, use a pergunta como educacao perceptiva, nao como dado final.</p>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Uma aluna faz supino com halteres e relata RIR 4, dizendo que ainda conseguiria varias repeticoes.</p>
+<p>Nas ultimas repeticoes, porem, a amplitude encurta, os halteres perdem simetria e o ritmo fica desorganizado.</p>
+<p>Mesmo que o relato diga "esta tranquilo", a tecnica sugere que progredir carga agora pode nao ser a melhor decisao.</p>
+<p>Uma boa conduta pode ser manter ou reduzir levemente a demanda, reforcar o padrao e ensinar a aluna a relacionar esforco com qualidade de execucao.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>O aluno sabe diferenciar esforco geral de repeticoes em reserva?</li>
+<li>O relato combina com fluidez e tecnica?</li>
+<li>A serie terminou perto do alvo planejado?</li>
+<li>A tecnica permite progredir sem perder o objetivo?</li>
+<li>O ajuste tambem pode ser pedagogico, ajudando o aluno a calibrar percepcao?</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frases profissionais</h3>
+<p>"Quando eu pergunto RIR, quero que voce pense em repeticoes com a mesma qualidade, nao apenas em repetir de qualquer jeito."</p>
+<p>"Seu relato foi de esforco controlado, mas a tecnica mudou no final. Vamos manter a carga e buscar mais consistencia."</p>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>RPE e RIR nao sao comandos automaticos.</p>
+<p>Eles precisam conversar com tecnica, contexto, objetivo do exercicio e experiencia do aluno.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Perguntas para revisar:</p>
+<ul>
+<li>O que o aluno sentiu?</li>
+<li>O que a execucao mostrou?</li>
+<li>A tecnica sustentou o alvo?</li>
+<li>O relato do aluno e confiavel para este exercicio?</li>
+<li>Qual decisao preserva qualidade e objetivo?</li>
+</ul>
+<hr>
+</div>
+</section>
+<section class="chapter" id="capitulo-5">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 5</span><h2>Da leitura ao ajuste: manter, progredir, reduzir ou modificar</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve transformar observacao em decisao pratica.</p>
+<p>Voce deve diferenciar quando manter, progredir, reduzir, recuperar, simplificar ou modificar a demanda do exercicio.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>O bom ajuste e a menor mudanca suficiente para aproximar a resposta do aluno da intencao do exercicio.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>Depois de observar, o trainee precisa agir.</p>
+<p>Mas agir nao significa sempre trocar peso. A demanda do exercicio pode ser ajustada por varias portas: carga, repeticoes, amplitude, ritmo, intervalo, variacao, ordem ou objetivo da serie.</p>
+<p>O erro comum e mexer em muitas variaveis ao mesmo tempo. Quando isso acontece, fica dificil saber o que resolveu o problema.</p>
+<p>Primeiro identifique o problema dominante. Depois escolha o ajuste mais simples.</p>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>Menor mudanca suficiente</strong> e o ajuste minimo capaz de alinhar a serie ao objetivo.</p>
+<p>Se reduzir um pouco a carga resolve, talvez nao seja necessario trocar o exercicio.</p>
+<p>Se aumentar o intervalo resolve a queda de rendimento, talvez nao seja necessario mudar toda a estrutura.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Antes de decidir, pergunte:</p>
+<blockquote>
+<p>Qual e o problema dominante: esforco, tecnica, fadiga, prontidao, compreensao ou desconforto incomum?</p>
+</blockquote>
+<p>A resposta guia a escolha.</p>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<p>Use os cards abaixo como matriz mobile-friendly. Eles orientam raciocinio, mas nao substituem julgamento.</p>
+<article class="decision-card"><h4>Card 1 - Tecnica boa + esforco abaixo do alvo</h4>
+<p><strong>Decisao provavel:</strong> progredir.</p>
+<p>Considere aumentar carga, repeticoes ou desafio tecnico, desde que o objetivo do exercicio continue preservado.</p>
+<p><strong>Pergunta de controle:</strong> a progressao melhora o estimulo ou apenas satisfaz a vontade de aumentar peso?</p>
+</article>
+<article class="decision-card"><h4>Card 2 - Tecnica boa + esforco proximo do alvo</h4>
+<p><strong>Decisao provavel:</strong> manter.</p>
+<p>O estimulo esta condizente com a intencao da serie. Manter pode ser a decisao mais tecnica.</p>
+<p><strong>Pergunta de controle:</strong> ha motivo real para mudar agora?</p>
+</article>
+<article class="decision-card"><h4>Card 3 - Tecnica oscila + esforco acima do alvo</h4>
+<p><strong>Decisao provavel:</strong> reduzir.</p>
+<p>Considere diminuir peso, reduzir repeticoes planejadas ou ajustar amplitude para preservar qualidade.</p>
+<p><strong>Pergunta de controle:</strong> qual reducao pequena ja recoloca a serie no alvo?</p>
+</article>
+<article class="decision-card"><h4>Card 4 - Queda clara de rendimento entre series</h4>
+<p><strong>Decisao provavel:</strong> recuperar.</p>
+<p>Considere aumentar o intervalo, reduzir a proxima demanda ou revisar a sequencia.</p>
+<p><strong>Pergunta de controle:</strong> o aluno precisa de menos carga ou de mais recuperacao?</p>
+</article>
+<article class="decision-card"><h4>Card 5 - Movimento instavel ou padrao motor perdido</h4>
+<p><strong>Decisao provavel:</strong> simplificar.</p>
+<p>Considere ajustar ritmo, reduzir complexidade ou trocar por uma variacao mais estavel.</p>
+<p><strong>Pergunta de controle:</strong> o exercicio atual ainda permite aprender e treinar com qualidade?</p>
+</article>
+<article class="decision-card"><h4>Card 6 - Desconforto incomum ou mudanca relevante no estado</h4>
+<p><strong>Decisao provavel:</strong> modificar.</p>
+<p>Considere alterar amplitude, trocar variacao ou interromper aquele exercicio conforme o contexto.</p>
+<p><strong>Pergunta de controle:</strong> e seguro insistir nesta proposta agora?</p>
+</article>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Um aluno faz desenvolvimento com halteres.</p>
+<p>Na primeira serie, relata esforco alto, perde estabilidade acima da cabeca e encurta a amplitude nas repeticoes finais. Ele ainda completa o numero planejado.</p>
+<p>Completar as repeticoes nao significa que a demanda esta adequada.</p>
+<p>Se o objetivo era executar com controle, voce pode reduzir um pouco a carga, ajustar o numero de repeticoes ou trocar para uma variacao mais estavel.</p>
+<p>Se a instabilidade for o problema dominante, simplificar pode ser melhor do que apenas diminuir uma repeticao.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>O objetivo da serie ainda esta sendo cumprido?</li>
+<li>O problema dominante e carga, tecnica, fadiga, recuperacao, variacao ou desconforto?</li>
+<li>Qual variavel mexe menos e resolve mais?</li>
+<li>Estou mudando uma coisa por vez quando possivel?</li>
+<li>Minha decisao preserva qualidade e seguranca operacional?</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frases profissionais</h3>
+<p>"A tecnica esta boa e o esforco ainda ficou abaixo do alvo. Vamos progredir um pouco na proxima."</p>
+<p>"A resposta chegou perto do que queremos hoje. Vamos manter e buscar consistencia."</p>
+<p>"A execucao comecou a oscilar. Vou reduzir a demanda para preservar o padrao."</p>
+<p>"A melhor decisao agora e simplificar a variacao para manter o objetivo do exercicio."</p>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>Nao transforme os cards em regras automaticas.</p>
+<p>Eles ajudam a pensar, mas a decisao depende do contexto, do objetivo do exercicio, do nivel tecnico e do relato do aluno.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Se observar, considere:</p>
+<ul>
+<li>tecnica boa e esforco baixo: progredir;</li>
+<li>tecnica boa e esforco no alvo: manter;</li>
+<li>tecnica oscilando e esforco alto: reduzir;</li>
+<li>rendimento caindo entre series: recuperar;</li>
+<li>padrao motor instavel: simplificar;</li>
+<li>desconforto incomum: modificar.</li>
+</ul>
+<p>Sempre confirme com contexto e escolha a menor mudanca suficiente.</p>
+<hr>
+</div>
+</section>
+<section class="chapter" id="capitulo-6">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 6</span><h2>Sinais de fadiga durante a execucao</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve saber para onde olhar durante a serie para identificar pistas operacionais de fadiga.</p>
+<p>Voce tambem deve evitar tratar sinais visuais como medicoes precisas ou diagnosticos.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>Sinais de fadiga sao pistas para revisar a demanda, nao provas automaticas de que a serie deve parar.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>Durante a serie, o aluno pode mostrar mudancas antes mesmo de relatar dificuldade.</p>
+<p>A velocidade aparente pode cair. A fluidez pode diminuir. A amplitude pode encurtar. A estabilidade pode piorar. Compensacoes podem aparecer apenas nas repeticoes finais.</p>
+<p>Essas pistas ajudam o personal a decidir se a demanda ainda esta adequada para o objetivo da serie.</p>
+<p>O ponto nao e medir fadiga com os olhos. O ponto e perceber quando a qualidade da execucao comeca a mudar de forma relevante.</p>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>Sinal de fadiga</strong> e uma mudanca observavel que sugere aumento de esforco ou queda de qualidade.</p>
+<p>Exemplos: lentidao evidente, perda de fluidez, compensacao, amplitude menor, instabilidade, pausa desorganizada ou hesitacao incomum.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Durante a serie, pergunte silenciosamente:</p>
+<blockquote>
+<p>A dificuldade esta dentro do esperado ou ja esta mudando a qualidade da execucao?</p>
+</blockquote>
+<p>Essa pergunta ajuda a separar esforco normal de perda de padrao relevante.</p>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<p>Organize sua observacao em quatro grupos.</p>
+<article class="decision-card"><h4>Card 1 - Fluidez e ritmo</h4>
+<p>Observe se o movimento fica claramente mais lento, travado ou irregular.</p>
+<p>Considere revisar a demanda quando a perda de fluidez aparece cedo demais ou prejudica o objetivo da serie.</p>
+</article>
+<article class="decision-card"><h4>Card 2 - Amplitude e controle</h4>
+<p>Observe se a amplitude encurta sem combinacao previa ou se o aluno perde controle em pontos especificos.</p>
+<p>Considere reduzir carga, diminuir repeticoes ou ajustar amplitude quando a qualidade deixa de sustentar a proposta.</p>
+</article>
+<article class="decision-card"><h4>Card 3 - Estabilidade e compensacoes</h4>
+<p>Observe se surgem compensacoes que nao apareciam nas primeiras repeticoes.</p>
+<p>Considere simplificar a variacao quando o exercicio fica mais complexo do que o aluno consegue controlar naquele momento.</p>
+</article>
+<article class="decision-card"><h4>Card 4 - Contexto e comportamento</h4>
+<p>Observe expressao, respiracao, hesitacao e necessidade de pausas inesperadas.</p>
+<p>Use essas pistas junto com relato e tecnica. Elas nao decidem sozinhas.</p>
+</article>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Uma aluna faz remada baixa.</p>
+<p>Nas primeiras repeticoes, o movimento e fluido. No final da serie, ela comeca a puxar com tronco, perde ritmo e reduz a amplitude.</p>
+<p>Ela diz que "ainda da", mas a execucao mostra que as proximas repeticoes provavelmente sairiam fora do padrao desejado.</p>
+<p>Voce pode encerrar a serie no ponto adequado, manter a carga com menos repeticoes na proxima, ou reduzir a demanda para preservar tecnica.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>A fluidez mudou de forma clara?</li>
+<li>A amplitude encurtou sem intencao?</li>
+<li>Surgiram compensacoes novas?</li>
+<li>A estabilidade piorou?</li>
+<li>O relato do aluno combina com o que apareceu no movimento?</li>
+<li>A demanda ainda serve ao objetivo da serie?</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frases profissionais</h3>
+<p>"Notei que o ritmo do movimento mudou. Como esta o esforco para manter essa execucao?"</p>
+<p>"Vamos parar por aqui para preservar a qualidade que queremos nesta serie."</p>
+<p>"Na proxima, vou ajustar a demanda para voce manter o mesmo padrao ate o final."</p>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>Nao diga que viu "percentual de queda de velocidade" se voce nao mediu com tecnologia adequada.</p>
+<p>Sem equipamento especifico, fale em perda de fluidez, lentidao evidente ou mudanca clara no padrao.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Sinais para observar:</p>
+<ul>
+<li>fluidez;</li>
+<li>amplitude;</li>
+<li>estabilidade;</li>
+<li>ritmo;</li>
+<li>compensacoes;</li>
+<li>respiracao;</li>
+<li>hesitacao;</li>
+<li>relato do aluno.</li>
+</ul>
+<p>Use esses sinais como pistas, nao como diagnostico.</p>
+<hr>
+</div>
+</section>
+<section class="chapter" id="capitulo-7">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 7</span><h2>Comunicacao profissional do ajuste</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve comunicar ajustes de carga com seguranca, clareza e postura profissional.</p>
+<p>Voce tambem deve evitar frases que passam inseguranca, autoritarismo ou improviso.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>Comunicar bem o ajuste faz parte do controle de carga.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>O aluno percebe a forma como o personal conduz a decisao.</p>
+<p>Se voce muda a carga sem explicar nada, ele pode achar que a mudanca foi aleatoria. Se voce explica demais, pode quebrar o ritmo da sessao. Se voce fala com inseguranca, pode reduzir a confianca.</p>
+<p>A boa comunicacao e curta, concreta e tecnica.</p>
+<p>Ela deve dizer o que foi observado, por que isso importa e o que vai mudar.</p>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>Comunicacao operacional</strong> e a fala curta que conecta observacao, motivo tecnico e proxima acao.</p>
+<p>Ela nao e uma aula longa. E uma intervencao para conduzir a sessao.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Antes de falar, organize a frase em tres partes:</p>
+<blockquote>
+<p>O que eu observei? Por que isso importa? O que vamos fazer agora?</p>
+</blockquote>
+<p>Essa estrutura ajuda o trainee a soar seguro sem ser autoritario.</p>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<p>Use este modelo:</p>
+<p><strong>1. Observacao concreta</strong></p>
+<p>"Notei que o ritmo mudou."</p>
+<p>"A amplitude encurtou nas ultimas repeticoes."</p>
+<p>"A tecnica ficou mais instavel no final."</p>
+<p><strong>2. Motivo tecnico simples</strong></p>
+<p>"Quero preservar a qualidade do movimento."</p>
+<p>"Isso mostra que estamos perto do alvo de esforco de hoje."</p>
+<p>"Para este exercicio, o controle e mais importante do que forcar mais repeticoes."</p>
+<p><strong>3. Proxima acao</strong></p>
+<p>"Vou reduzir um pouco a carga."</p>
+<p>"Vamos manter e buscar mais consistencia."</p>
+<p>"Vamos simplificar a variacao nesta serie."</p>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Durante o agachamento goblet, o aluno completa as repeticoes, mas perde postura e encurta a amplitude no final.</p>
+<p>Uma fala insegura seria:</p>
+<p>"Acho que ficou meio ruim. Talvez seja melhor baixar."</p>
+<p>Uma fala profissional seria:</p>
+<p>"Observei que a amplitude encurtou nas ultimas repeticoes. Para manter o padrao que queremos, vou reduzir um pouco a carga na proxima serie."</p>
+<p>A segunda frase mostra criterio e direcao.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>Minha fala cita uma observacao concreta?</li>
+<li>O motivo tecnico esta simples?</li>
+<li>A acao ficou clara?</li>
+<li>Evitei transferir a decisao para o aluno?</li>
+<li>Evitei falar como se fosse tentativa aleatoria?</li>
+<li>Mantive a sessao fluindo?</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frases profissionais</h3>
+<p>"A execucao sugere que estamos chegando perto do nosso alvo de esforco de hoje."</p>
+<p>"Vamos manter essa carga e controlar melhor as repeticoes para preservar o padrao."</p>
+<p>"Para mantermos a qualidade tecnica que buscamos, vou ajustar o peso para a proxima serie."</p>
+<p>"Hoje a melhor decisao e simplificar a variacao para manter o objetivo do exercicio."</p>
+</div>
+<div class="content-block phrases">
+<h3>Frases a evitar</h3>
+<ul>
+<li>"Nao sei se esta certo, mas talvez seja melhor mudar."</li>
+<li>"Vamos baixar porque parece que ficou ruim."</li>
+<li>"Acho que voce nao consegue com esse peso."</li>
+<li>"A ciencia diz que agora tem que reduzir."</li>
+</ul>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>Nao transforme toda decisao em explicacao longa.</p>
+<p>O aluno precisa entender a conducao, mas a sessao tambem precisa manter ritmo, foco e confianca.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Frase profissional tem tres partes:</p>
+<ul>
+<li>observacao concreta;</li>
+<li>motivo tecnico simples;</li>
+<li>proxima acao clara.</li>
+</ul>
+<p>Comunicacao boa educa o aluno e protege a percepcao de competencia do personal.</p>
+<hr>
+</div>
+</section>
+<section class="chapter" id="capitulo-8">
+<header class="chapter-head"><span class="chapter-kicker">Capitulo 8</span><h2>Checklist final de raciocinio</h2></header>
+<div class="content-block learning-goal">
+<h3>Objetivo de aprendizagem</h3>
+<p>Ao final deste capitulo, voce deve integrar os conceitos do ebook em um fluxo simples de raciocinio para a sessao.</p>
+<p>O objetivo nao e decorar uma sequencia rigida, mas ter uma referencia mental para observar, decidir e comunicar.</p>
+</div>
+<div class="content-block central-idea">
+<h3>Ideia central</h3>
+<p>Controle de carga e a capacidade de ajustar proposta e resposta com criterio profissional.</p>
+</div>
+<div class="content-block explanation">
+<h3>Explicacao curta</h3>
+<p>Ao longo da sessao, o trainee precisa juntar varias informacoes.</p>
+<p>A ficha mostra a proposta. O aluno mostra a resposta. A tecnica mostra se a demanda esta sustentavel. O relato ajuda a calibrar esforco. A comunicacao transforma a decisao em conducao profissional.</p>
+<p>Quando essas partes conversam, o ajuste fica mais claro.</p>
+<p>Quando elas entram em conflito, o trainee precisa desacelerar o raciocinio e voltar a pergunta-guia:</p>
+<blockquote>
+<p>O que esta acontecendo agora e qual e a menor mudanca que adequa a intensidade ao aluno?</p>
+</blockquote>
+</div>
+<div class="content-block definition">
+<h3>Definicao rapida</h3>
+<p><strong>Raciocinio de ajuste</strong> e o processo de observar, interpretar, decidir e comunicar a mudanca mais adequada para a proxima acao da sessao.</p>
+</div>
+<div class="content-block observe">
+<h3>Observe antes de ajustar</h3>
+<p>Use este fluxo mental:</p>
+<ol>
+<li>O que estava planejado?</li>
+<li>O que o aluno mostrou antes da serie?</li>
+<li>O que a execucao mostrou durante a serie?</li>
+<li>O relato combina com a tecnica?</li>
+<li>Qual e o problema dominante?</li>
+<li>Qual e a menor mudanca suficiente?</li>
+<li>Como comunicar isso com clareza?</li>
+</ol>
+</div>
+<div class="content-block operation">
+<h3>Orientacao operacional de decisao</h3>
+<article class="decision-card"><h4>Antes da serie</h4>
+<p>Observe prontidao, comportamento, aquecimento e compreensao do exercicio.</p>
+<p>Decida se a entrada planejada ainda faz sentido.</p>
+</article>
+<article class="decision-card"><h4>Durante a serie</h4>
+<p>Compare relato, fluidez, amplitude, estabilidade, ritmo e compensacoes.</p>
+<p>Decida se a demanda ainda serve ao objetivo da serie.</p>
+</article>
+<article class="decision-card"><h4>Depois da serie</h4>
+<p>Escolha entre manter, progredir, reduzir, recuperar, simplificar ou modificar.</p>
+<p>Comunique o ajuste dizendo o que foi observado, por que importa e o que muda agora.</p>
+</article>
+</div>
+<div class="content-block example">
+<h3>Exemplo para o trainee</h3>
+<p>Um aluno chega um pouco cansado, mas executa bem o aquecimento.</p>
+<p>Na primeira serie efetiva, relata esforco alto, mas mantem tecnica, amplitude e ritmo. Na segunda serie, o rendimento cai e a fluidez muda cedo.</p>
+<p>Uma decisao possivel e manter a carga, aumentar um pouco o intervalo e observar se a qualidade retorna.</p>
+<p>Se a queda continuar, voce pode reduzir a demanda da proxima serie.</p>
+<p>Essa decisao e melhor do que trocar o exercicio imediatamente sem entender se o problema era fadiga acumulada, intervalo curto ou carga excessiva para o dia.</p>
+</div>
+<div class="content-block checklist">
+<h3>Mini checklist</h3>
+<ul>
+<li>A carga nao e so peso.</li>
+<li>Intensidade depende da relacao entre proposta e resposta.</li>
+<li>RPE e RIR ajudam, mas nao decidem sozinhos.</li>
+<li>Tecnica e fluidez precisam ter peso no julgamento.</li>
+<li>Sinais de fadiga sao pistas, nao medicoes.</li>
+<li>Ajuste bom e proporcional.</li>
+<li>Comunicacao faz parte da conducao.</li>
+</ul>
+</div>
+<div class="content-block phrases">
+<h3>Frases profissionais</h3>
+<p>"Vou manter a proposta porque a execucao esta dentro do alvo que buscamos."</p>
+<p>"A resposta mudou nesta serie. Vamos ajustar apenas o necessario para preservar qualidade."</p>
+<p>"O objetivo agora e manter o padrao, nao forcar uma repeticao a qualquer custo."</p>
+</div>
+<div class="content-block caution">
+<h3>Cautela</h3>
+<p>Este ebook nao ensina diagnostico clinico, reabilitacao, performance esportiva de elite, periodizacao complexa ou controle cronico de volume.</p>
+<p>O foco aqui e a decisao aguda dentro da sessao de treino de forca com publico geral.</p>
+</div>
+<div class="content-block recap">
+<h3>Recapitulo</h3>
+<p>Checklist final:</p>
+<ul>
+<li>observe antes de ajustar;</li>
+<li>compare proposta e resposta;</li>
+<li>use RPE/RIR como conversa, nao como certeza;</li>
+<li>olhe tecnica, fluidez, amplitude e estabilidade;</li>
+<li>escolha a menor mudanca suficiente;</li>
+<li>comunique com observacao, motivo e acao;</li>
+<li>preserve o escopo da sessao.</li>
+</ul>
+</div>
+</section>
+<section class="chapter appendix" id="rastreabilidade-do-rascunho">
+<header class="chapter-head"><span class="chapter-kicker">Anexo</span><h2>Rastreabilidade do rascunho</h2></header>
+<p>Este rascunho local foi estruturado a partir de:</p>
+<ul>
+<li><code>fluxo padrão/08_fonte-mestre-validada.md</code>;</li>
+<li><code>fluxo padrão/04_roteiro-mestre-rascunho.md</code>;</li>
+<li><code>diretrizes/diretriz-ebook-mobile-first.md</code>;</li>
+<li><code>diretrizes/criterios-linguagem-densidade-operacional.md</code>;</li>
+<li><code>prompts/notebooklm-ebook-estrutura-e-capitulos.md</code>.</li>
+</ul>
+<p>Itens a revisar na auditoria posterior:</p>
+<ul>
+<li>densidade por capitulo em leitura mobile;</li>
+<li>repeticao intencional versus excesso de redundancia;</li>
+<li>fidelidade dos exemplos ao publico geral de academia;</li>
+<li>ausencia de desvio para clinica, performance esportiva ou periodizacao;</li>
+<li>necessidade de ajustes apos rodada NotebookLM.</li>
+</ul>
+</section>
+
+    </main>
+  </div>
+
+  <a class="back-top" href="#topo" aria-label="Voltar ao topo">Top</a>
+
+  <script>
+    const bar = document.getElementById('progress-bar');
+    const updateProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+      bar.style.width = pct + '%';
+    };
+    document.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+  </script>
+</body>
+</html>

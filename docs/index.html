@@ -1,0 +1,2405 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajuste de Carga na Prática | Ebook Interativo</title>
+  <style>
+    :root {
+      --black: #000;
+      --graphite-950: #070707;
+      --graphite-900: #0b0b0b;
+      --graphite-850: #111;
+      --graphite-800: #151515;
+      --graphite-700: #242424;
+      --graphite-600: #343434;
+      --paper: #f2f3f6;
+      --paper-2: #ffffff;
+      --ink: #101010;
+      --muted: #60636a;
+      --lime: #dfff2f;
+      --lime-2: #e3ff28;
+      --line: rgba(223, 255, 47, 0.42);
+      --danger: #ff5c5c;
+      --ok: #41d888;
+      --radius: 8px;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.26);
+      --step: 8px;
+      --max: 680px;
+      color-scheme: dark light;
+      font-family: Inter, Montserrat, Roboto, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--black);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--paper);
+      background:
+        linear-gradient(135deg, rgba(223, 255, 47, 0.08) 0 1px, transparent 1px 56px),
+        radial-gradient(circle at 100% 0%, rgba(223, 255, 47, 0.08), transparent 28rem),
+        var(--black);
+      overflow-x: hidden;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--lime);
+      outline-offset: 3px;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding-bottom: 104px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(0, 0, 0, 0.86);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .topbar-inner {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      padding: 10px 16px 12px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 44px;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .x-mark {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      background: var(--lime);
+      clip-path: polygon(0 0, 100% 0, 72% 50%, 100% 100%, 0 100%, 30% 50%);
+      position: relative;
+      box-shadow: 0 0 22px rgba(223, 255, 47, 0.28);
+    }
+
+    .x-mark::after {
+      content: "";
+      position: absolute;
+      inset: 8px 12px;
+      background: var(--black);
+      transform: skew(-18deg);
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy strong {
+      display: block;
+      color: var(--paper);
+      font-size: 0.86rem;
+      line-height: 1.05;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-copy span {
+      display: block;
+      color: rgba(242, 243, 246, 0.66);
+      font-size: 0.72rem;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--paper);
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .icon-btn[aria-pressed="true"] {
+      background: var(--lime);
+      color: var(--black);
+      border-color: var(--lime);
+    }
+
+    .progress-shell {
+      height: 8px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--lime);
+      transition: width 220ms ease;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: rgba(242, 243, 246, 0.68);
+      font-size: 0.72rem;
+      margin-top: 8px;
+    }
+
+    .screen {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      padding: 18px 16px 32px;
+    }
+
+    .hero {
+      min-height: calc(100vh - 120px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 32px;
+      padding-top: 18px;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 220px;
+      border: 1px solid rgba(223, 255, 47, 0.28);
+      background:
+        linear-gradient(135deg, rgba(223, 255, 47, 0.15), transparent 32%),
+        linear-gradient(180deg, #151515, #050505);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border: 1px solid rgba(223, 255, 47, 0.2);
+      clip-path: polygon(0 0, 86% 0, 100% 18%, 100% 100%, 14% 100%, 0 82%);
+    }
+
+    .hero-x {
+      position: absolute;
+      right: -24px;
+      top: 20px;
+      width: 210px;
+      height: 210px;
+      background: var(--lime);
+      clip-path: polygon(0 0, 100% 0, 70% 50%, 100% 100%, 0 100%, 30% 50%);
+      opacity: 0.96;
+    }
+
+    .hero-x::after {
+      content: "";
+      position: absolute;
+      inset: 42px 78px;
+      background: #050505;
+      transform: skew(-18deg);
+    }
+
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.05) 0,
+        rgba(255, 255, 255, 0.05) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+      opacity: 0.25;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .hero-panel {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      width: min(72%, 360px);
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.76);
+      border-left: 4px solid var(--lime);
+      clip-path: polygon(0 0, 92% 0, 100% 18%, 100% 100%, 0 100%);
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      background: var(--lime);
+      color: var(--black);
+      font-size: 0.74rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      border-radius: 2px;
+    }
+
+    h1, h2, h3 {
+      letter-spacing: 0;
+      margin: 0;
+    }
+
+    .hero h1 {
+      margin-top: 18px;
+      font-size: clamp(2.6rem, 12vw, 5.5rem);
+      line-height: 0.9;
+      text-transform: uppercase;
+      font-weight: 950;
+      max-width: 11ch;
+    }
+
+    .hero-lead {
+      margin: 18px 0 0;
+      max-width: 32rem;
+      color: rgba(242, 243, 246, 0.78);
+      line-height: 1.55;
+      font-size: 1rem;
+    }
+
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 22px;
+      order: 9;
+    }
+
+    .btn {
+      min-height: 48px;
+      border: 0;
+      border-radius: var(--radius);
+      padding: 0 16px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--lime);
+      color: var(--black);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--paper);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .home-guide {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .home-guide-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      line-height: 1.45;
+    }
+
+    .home-guide-item span {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      background: var(--lime);
+      color: var(--black);
+      font-weight: 950;
+      font-size: 0.82rem;
+    }
+
+    .chapter-tile {
+      min-height: 96px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--paper);
+      border-radius: var(--radius);
+      padding: 12px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .chapter-tile strong {
+      font-size: 0.82rem;
+      line-height: 1.2;
+    }
+
+    .chapter-tile span {
+      color: var(--lime);
+      font-size: 1.5rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .chapter-tile.is-done {
+      border-color: rgba(223, 255, 47, 0.45);
+      background: rgba(223, 255, 47, 0.09);
+    }
+
+    .chapter {
+      display: none;
+    }
+
+    .chapter.is-active,
+    .home.is-active {
+      display: block;
+    }
+
+    .home {
+      display: none;
+    }
+
+    .chapter-head {
+      min-height: 240px;
+      padding: 18px;
+      background:
+        linear-gradient(135deg, rgba(223, 255, 47, 0.18), transparent 36%),
+        var(--graphite-900);
+      border: 1px solid rgba(223, 255, 47, 0.22);
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+
+    .chapter-head::after {
+      content: attr(data-num);
+      position: absolute;
+      right: -12px;
+      top: 18px;
+      color: rgba(223, 255, 47, 0.16);
+      font-size: 8rem;
+      line-height: 0.8;
+      font-weight: 950;
+    }
+
+    .chapter-head h2 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2rem, 9vw, 4.5rem);
+      line-height: 0.92;
+      text-transform: uppercase;
+      font-weight: 950;
+      max-width: 10ch;
+    }
+
+    .chapter-head p {
+      position: relative;
+      z-index: 1;
+      color: rgba(242, 243, 246, 0.8);
+      line-height: 1.45;
+      margin: 0;
+      max-width: 32rem;
+    }
+
+    .section-stack {
+      display: grid;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 18px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .panel.dark {
+      background: var(--graphite-850);
+      color: var(--paper);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .panel.lime {
+      background: var(--lime);
+      color: var(--black);
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      background: var(--black);
+      color: var(--lime);
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      border-radius: 2px;
+      margin-bottom: 12px;
+    }
+
+    .panel.dark .section-label {
+      background: var(--lime);
+      color: var(--black);
+    }
+
+    .panel h3 {
+      font-size: 1.25rem;
+      line-height: 1.12;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-weight: 950;
+    }
+
+    .panel p {
+      margin: 0 0 12px;
+      line-height: 1.58;
+      color: inherit;
+    }
+
+    .panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .idea-card {
+      display: grid;
+      grid-template-columns: 4px 1fr;
+      gap: 12px;
+      align-items: stretch;
+      font-size: 1.18rem;
+      line-height: 1.35;
+      font-weight: 850;
+    }
+
+    .idea-card::before {
+      content: "";
+      background: var(--lime);
+      border-radius: 999px;
+    }
+
+    .def-grid,
+    .button-grid,
+    .action-grid,
+    .signal-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-card,
+    .action-card,
+    .signal-card {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.66);
+      border-radius: var(--radius);
+      padding: 14px;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+      width: 100%;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .mini-card:hover,
+    .action-card:hover,
+    .signal-card:hover,
+    .mini-card:focus-visible,
+    .action-card:focus-visible,
+    .signal-card:focus-visible {
+      border-color: rgba(223, 255, 47, 0.76);
+      transform: translateY(-1px);
+    }
+
+    .card-hint {
+      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.48);
+      font-size: 0.76rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .card-hint::after {
+      content: " +";
+      color: var(--lime);
+      font-weight: 950;
+    }
+
+    .panel.dark .card-hint {
+      color: rgba(242, 243, 246, 0.52);
+    }
+
+    .panel.dark .mini-card,
+    .panel.dark .action-card,
+    .panel.dark .signal-card {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .mini-card strong,
+    .action-card strong,
+    .signal-card strong {
+      display: block;
+      color: inherit;
+      line-height: 1.18;
+      margin-bottom: 8px;
+      font-weight: 950;
+    }
+
+    .mini-card span,
+    .action-card span,
+    .signal-card span {
+      color: var(--muted);
+      line-height: 1.45;
+      display: block;
+    }
+
+    .panel.dark .mini-card span,
+    .panel.dark .action-card span,
+    .panel.dark .signal-card span {
+      color: rgba(242, 243, 246, 0.72);
+    }
+
+    .action-card {
+      border-left: 4px solid var(--lime);
+    }
+
+    .action-meta {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .action-meta div {
+      background: rgba(0, 0, 0, 0.04);
+      padding: 10px;
+      border-radius: 6px;
+      line-height: 1.45;
+    }
+
+    .panel.dark .action-meta div {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .example {
+      border-left: 4px solid var(--lime);
+      padding-left: 14px;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+    }
+
+    .check-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .check-icon {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      background: var(--lime);
+      color: var(--black);
+      font-weight: 950;
+      line-height: 1;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .check-item span {
+      line-height: 1.35;
+    }
+
+    .phrase-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .phrase {
+      padding: 14px;
+      border-left: 4px solid var(--lime);
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      line-height: 1.48;
+      font-weight: 750;
+    }
+
+    .panel.dark .phrase {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .quiz-set {
+      display: grid;
+      gap: 12px;
+      padding: 14px 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .quiz-set:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .quiz-set h3 {
+      margin-bottom: 0;
+    }
+
+    .quiz-option {
+      min-height: 52px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: var(--paper-2);
+      color: var(--ink);
+      padding: 12px;
+      text-align: left;
+      line-height: 1.35;
+    }
+
+    .quiz-option.is-selected {
+      border-color: var(--lime);
+      box-shadow: inset 0 0 0 2px var(--lime);
+    }
+
+    .quiz-option.is-correct {
+      border-color: var(--ok);
+      background: rgba(65, 216, 136, 0.16);
+    }
+
+    .quiz-option.is-wrong {
+      border-color: var(--danger);
+      background: rgba(255, 92, 92, 0.12);
+    }
+
+    .feedback {
+      min-height: 44px;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: var(--radius);
+      display: none;
+      line-height: 1.45;
+    }
+
+    .feedback.is-visible {
+      display: block;
+      background: rgba(223, 255, 47, 0.16);
+      border: 1px solid rgba(223, 255, 47, 0.35);
+    }
+
+    .recap {
+      display: grid;
+      gap: 10px;
+    }
+
+    .recap-line {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      line-height: 1.45;
+    }
+
+    .recap-line::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      margin-top: 5px;
+      flex: 0 0 12px;
+      background: var(--lime);
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    }
+
+    .complete-card {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 16px;
+      background: rgba(223, 255, 47, 0.1);
+      border: 1px solid rgba(223, 255, 47, 0.32);
+      border-radius: var(--radius);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      background: rgba(0, 0, 0, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(18px);
+    }
+
+    .bottom-inner {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      padding: 10px 16px;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chapter-menu-btn,
+    .chapter-menu-label {
+      min-width: 0;
+      height: 48px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--paper);
+      padding: 0 12px;
+      font-weight: 800;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .chapter-menu-btn::after {
+      content: "⌃";
+      margin-left: 10px;
+      color: var(--lime);
+    }
+
+    .chapter-menu-label {
+      opacity: 0.72;
+      cursor: default;
+    }
+
+    .chapter-menu {
+      position: fixed;
+      left: 50%;
+      bottom: 78px;
+      width: min(calc(100% - 32px), var(--max));
+      transform: translateX(-50%);
+      z-index: 45;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: rgba(7, 7, 7, 0.98);
+      border: 1px solid rgba(223, 255, 47, 0.34);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.56);
+      display: none;
+    }
+
+    .chapter-menu.is-open {
+      display: block;
+    }
+
+    .chapter-menu-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .chapter-menu-head strong {
+      text-transform: uppercase;
+      color: var(--lime);
+      font-size: 0.82rem;
+    }
+
+    .chapter-menu-close {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--paper);
+      font-weight: 950;
+    }
+
+    .chapter-menu-list {
+      display: grid;
+      gap: 8px;
+      max-height: 58vh;
+      overflow: auto;
+    }
+
+    .chapter-menu-item {
+      min-height: 54px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--paper);
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 10px;
+      align-items: center;
+      text-align: left;
+      font-weight: 850;
+    }
+
+    .chapter-menu-item span {
+      color: var(--lime);
+      font-size: 1.15rem;
+      font-weight: 950;
+    }
+
+    .chapter-menu-item.is-active {
+      background: var(--lime);
+      color: var(--black);
+      border-color: var(--lime);
+    }
+
+    .chapter-menu-item.is-active span {
+      color: var(--black);
+    }
+
+    .popup-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      place-items: center;
+      padding: 18px 22px calc(88px + env(safe-area-inset-bottom));
+      overflow: hidden;
+    }
+
+    .popup-layer.is-open {
+      display: grid;
+    }
+
+    .popup-backdrop {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(223, 255, 47, 0.16), transparent 34%),
+        rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(10px);
+    }
+
+    .popup-card {
+      position: relative;
+      box-sizing: border-box;
+      width: min(calc(100vw - 44px), 520px);
+      max-width: calc(100vw - 44px);
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid rgba(223, 255, 47, 0.46);
+      background:
+        linear-gradient(135deg, rgba(223, 255, 47, 0.14), transparent 32%),
+        var(--graphite-900);
+      color: var(--paper);
+      padding: 18px;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.64);
+    }
+
+    .popup-card::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      top: -18px;
+      width: 150px;
+      height: 150px;
+      background: var(--lime);
+      opacity: 0.1;
+      clip-path: polygon(26% 0, 100% 0, 74% 100%, 0 100%);
+      pointer-events: none;
+    }
+
+    .popup-card h3 {
+      position: relative;
+      z-index: 1;
+      margin: 0 48px 12px 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      font-size: 1.28rem;
+      line-height: 1.12;
+      text-transform: uppercase;
+      font-weight: 950;
+    }
+
+    .popup-card p {
+      position: relative;
+      z-index: 1;
+      color: rgba(242, 243, 246, 0.82);
+      line-height: 1.5;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .popup-close {
+      position: absolute;
+      z-index: 2;
+      top: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--paper);
+      font-size: 1.4rem;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .popup-close:hover,
+    .popup-close:focus-visible {
+      background: var(--lime);
+      color: var(--black);
+      border-color: var(--lime);
+    }
+
+    body.popup-open {
+      overflow: hidden;
+    }
+
+    @media (max-width: 420px) {
+      .popup-layer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .popup-card {
+        width: calc(100vw - 36px);
+        max-width: calc(100vw - 36px);
+        padding: 16px;
+      }
+
+      .popup-card h3 {
+        margin-right: 44px;
+        font-size: 1.12rem;
+        line-height: 1.12;
+      }
+
+      .popup-card p {
+        font-size: 0.98rem;
+        line-height: 1.45;
+      }
+
+      .popup-close {
+        width: 38px;
+        height: 38px;
+      }
+    }
+
+    .finish-panel {
+      min-height: calc(100vh - 160px);
+      display: grid;
+      align-content: center;
+      gap: 18px;
+    }
+
+    .finish-card {
+      padding: 22px;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(223, 255, 47, 0.18), transparent 34%),
+        var(--graphite-900);
+      border: 1px solid rgba(223, 255, 47, 0.3);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .finish-card h2 {
+      font-size: clamp(2.4rem, 10vw, 5rem);
+      line-height: 0.9;
+      text-transform: uppercase;
+      max-width: 9ch;
+      margin: 14px 0;
+    }
+
+    .finish-card p {
+      color: rgba(242, 243, 246, 0.82);
+      line-height: 1.58;
+      max-width: 34rem;
+    }
+
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius);
+      border: 0;
+      background: var(--lime);
+      color: var(--black);
+      font-weight: 950;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.32;
+      cursor: not-allowed;
+    }
+
+    @media (min-width: 620px) {
+      .hero-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .chapter-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .def-grid,
+      .button-grid,
+      .signal-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .screen {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand-row">
+          <button class="brand-mark icon-btn" id="homeBtn" type="button" aria-label="Voltar para capa">
+            <span class="x-mark" aria-hidden="true"></span>
+          </button>
+          <div class="brand-copy">
+            <strong>Ajuste de Carga</strong>
+            <span id="chapterMeta">Ebook interativo</span>
+          </div>
+        </div>
+        <div class="progress-shell" aria-label="Progresso do ebook">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-meta">
+          <span id="progressText">0% concluído</span>
+          <span id="quizText">0 decisões treinadas</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="screen" id="appRoot"></main>
+
+    <nav class="bottom-nav" aria-label="Navegação do ebook">
+      <div class="bottom-inner">
+        <button class="nav-btn" id="prevBtn" type="button" aria-label="Capítulo anterior">&lt;</button>
+        <button class="chapter-menu-btn" id="chapterMenuBtn" type="button" aria-label="Abrir menu de capítulos">Capa e mapa</button>
+        <button class="nav-btn" id="nextBtn" type="button" aria-label="Próximo capítulo">&gt;</button>
+      </div>
+    </nav>
+    <div class="chapter-menu" id="chapterMenu" aria-hidden="true">
+      <div class="chapter-menu-head">
+        <strong>Navegar no ebook</strong>
+        <button class="chapter-menu-close" id="chapterMenuClose" type="button" aria-label="Fechar menu">×</button>
+      </div>
+      <div class="chapter-menu-list" id="chapterMenuList"></div>
+    </div>
+
+    <div class="popup-layer" id="infoPopup" aria-hidden="true">
+      <div class="popup-backdrop" id="infoPopupBackdrop"></div>
+      <section class="popup-card" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+        <button class="popup-close" id="infoPopupClose" type="button" aria-label="Fechar explicação">×</button>
+        <span class="section-label">Explicação</span>
+        <h3 id="popupTitle">Explicação</h3>
+        <p id="popupText"></p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const chapters = [
+      {
+        id: 1,
+        tag: "Leitura da sessão",
+        title: "A carga é ajustada no atendimento real",
+        lead: "A ficha orienta. A resposta do aluno calibra a decisão.",
+        sections: {
+          abertura: [
+            "O controle de carga não termina quando a ficha de treino fica pronta.",
+            "Ele acontece no atendimento, entre uma série e outra, quando o aluno mostra se a proposta planejada combina com a condição real daquele dia."
+          ],
+          ideia: "A ficha orienta, mas a resposta do aluno calibra a decisão. O planejamento é o mapa. A sessão real é o terreno.",
+          entender: [
+            "O aluno planejado raramente é exatamente o aluno que chega para treinar.",
+            "Sono ruim, estresse, rotina corrida, insegurança, alimentação diferente, cansaço acumulado ou um dia melhor que o esperado podem mudar a resposta ao mesmo treino.",
+            "Ajustar a carga não é sinal de erro. Ajustar é demonstração de atenção técnica."
+          ],
+          definicoes: [
+            ["Ajuste agudo", "Decisão técnica de modificar a demanda do exercício durante a própria sessão, baseada no que o aluno apresenta agora."]
+          ],
+          observe: [
+            "Como o aluno chegou hoje?",
+            "O aquecimento confirmou o plano?",
+            "A execução está fluida ou pesada?",
+            "A técnica combina com a carga prevista?",
+            "Você está pronto para ajustar se o aquecimento contrariar a ficha?"
+          ],
+          exemplo: [
+            "Um aluno costuma fazer agachamento com 40 kg para 10 repetições. Hoje, ele dormiu mal. No aquecimento com 20 kg, a barra já parece pesada, o ritmo está mais lento e ele demonstra hesitação.",
+            "Forçar a ficha original pode comprometer a qualidade técnica. Uma decisão melhor seria reduzir a demanda da série efetiva e observar se o movimento volta ao padrão esperado."
+          ],
+          checklist: [
+            "O aluno apresenta mudança no estado habitual?",
+            "O aquecimento confirmou a disposição esperada?",
+            "O plano inicial ainda faz sentido para hoje?",
+            "Estou pronto para ajustar se a técnica oscilar no aquecimento?",
+            "Sei explicar o ajuste sem parecer que estou improvisando?"
+          ],
+          frases: [
+            "A ficha nos dá o caminho, mas a sua resposta agora ajuda a calibrar o ajuste.",
+            "Notei que o aquecimento ficou menos fluido hoje. Vou ajustar a carga para mantermos a qualidade do movimento.",
+            "Vamos preservar o objetivo do exercício, mesmo que hoje a carga precise ser diferente."
+          ],
+          cautela: "Ajustar não é mudar tudo a cada sinal de dificuldade. Toda mudança deve ter critério.",
+          recap: [
+            "O treino real exige leitura constante.",
+            "Se a ficha diz uma coisa, mas a sessão mostra outra, o personal precisa interpretar o contexto, observar a execução e ajustar com segurança."
+          ]
+        },
+        quiz: {
+          question: "No aquecimento, a carga leve já parece pesada e a técnica oscila. Qual leitura combina melhor com a aula?",
+          options: [
+            "Seguir a ficha para testar se o aluno melhora na série pesada.",
+            "Usar o aquecimento como dado de realidade e recalibrar a demanda.",
+            "Perguntar ao aluno qual carga ele quer usar."
+          ],
+          answer: 1,
+          feedback: "O aquecimento não é só preparação. Ele valida se a ficha combina com o aluno naquele dia."
+        }
+      },
+      {
+        id: 2,
+        tag: "Vocabulário mínimo",
+        title: "Carga, intensidade e resposta",
+        lead: "Controlar carga é ajustar a relação entre proposta e resposta.",
+        sections: {
+          abertura: [
+            "Controlar carga é muito mais do que escolher o peso das anilhas.",
+            "Para ajustar bem uma sessão, você precisa diferenciar o que foi proposto do que o aluno realmente está respondendo."
+          ],
+          ideia: "Controlar carga é ajustar a relação entre proposta e resposta.",
+          entender: [
+            "Dois alunos podem usar o mesmo peso e viver experiências completamente diferentes.",
+            "Para um, a carga pode ser moderada. Para outro, pode estar perto do limite técnico. O peso é igual, mas a intensidade percebida e a qualidade da execução podem ser diferentes.",
+            "Quanto melhor você entende os botões de ajuste, menos dependente fica de uma única resposta: aumentar ou diminuir peso."
+          ],
+          definicoes: [
+            ["Carga externa", "Aquilo que o treinador manipula: peso, repetições, séries, amplitude, ritmo, intervalo e escolha do exercício."],
+            ["Carga interna ou resposta", "Aquilo que o aluno demonstra: esforço percebido, fadiga, fluidez, prontidão e qualidade técnica."],
+            ["Intensidade relativa", "Demanda do exercício para aquele aluno, naquele momento."]
+          ],
+          botões: [
+            ["Peso", "Carga absoluta manipulada no exercício."],
+            ["Repetições", "Quantidade de execuções dentro da série."],
+            ["Amplitude", "Alcance do movimento que pode ser mantido com controle."],
+            ["Ritmo", "Velocidade e controle das fases do movimento."],
+            ["Intervalo", "Tempo de recuperação entre séries."],
+            ["Variação", "Escolha de uma versão mais simples, estável ou adequada."]
+          ],
+          observe: [
+            "O problema está no peso?",
+            "O ritmo ficou inadequado?",
+            "A amplitude está sendo perdida?",
+            "O intervalo foi curto demais?",
+            "A variação exige mais controle do que o aluno entrega hoje?"
+          ],
+          exemplo: [
+            "Dois alunos fazem supino com 20 kg. O Aluno A executa com fluidez, ritmo consistente e relata esforço moderado. O Aluno B perde fluidez na metade da série, treme e termina com dificuldade técnica.",
+            "A carga externa é igual. A resposta é completamente diferente."
+          ],
+          checklist: [
+            "Diferenciei o que prescrevi do que o aluno mostrou?",
+            "Lembrei que intensidade não é apenas peso?",
+            "Consigo identificar variáveis além da carga?",
+            "Ritmo e amplitude entraram na minha leitura?",
+            "O intervalo pode resolver parte do problema?"
+          ],
+          frases: [
+            "O peso é o mesmo, mas a resposta hoje está diferente. Vou ajustar para mantermos o objetivo.",
+            "Vou modificar o ritmo do exercício para mantermos melhor controle.",
+            "Antes de mexer no peso, quero ajustar a amplitude para preservar o padrão."
+          ],
+          cautela: "Volume semanal, periodização e registro são importantes em outros momentos. Aqui, o foco é a decisão aguda na frente do aluno.",
+          recap: [
+            "Dominar o vocabulário mínimo permite enxergar o treino como troca de sinais entre proposta e resposta.",
+            "Quando você entende carga externa, resposta e intensidade relativa, consegue ajustar com mais critério."
+          ]
+        },
+        quiz: {
+          question: "Dois alunos usam 20 kg, mas um perde técnica e o outro mantém fluidez. O que isso mostra?",
+          options: [
+            "A carga externa é igual, mas a resposta interna pode ser diferente.",
+            "O aluno que perdeu técnica necessariamente está sem vontade.",
+            "O peso deve ser sempre igual para alunos do mesmo nível."
+          ],
+          answer: 0,
+          feedback: "O peso é apenas uma parte da história. A resposta do aluno define a intensidade real naquele momento."
+        }
+      },
+      {
+        id: 3,
+        tag: "Prontidão",
+        title: "Leitura inicial antes de mexer na carga",
+        lead: "O ajuste bem-feito começa antes da troca de peso.",
+        sections: {
+          abertura: [
+            "A primeira grande decisão do personal não acontece quando ele olha para o halter.",
+            "Ela acontece quando ele olha para o aluno."
+          ],
+          ideia: "O ajuste bem-feito começa antes da troca de peso.",
+          entender: [
+            "A leitura inicial serve para validar se o plano da ficha combina com o estado real do aluno.",
+            "Essa leitura não precisa virar interrogatório. Ela deve ser breve, profissional e direcionada ao treino.",
+            "O aquecimento é a ferramenta de validação técnica mais importante desse momento."
+          ],
+          definicoes: [
+            ["Prontidão", "Estado imediato do aluno para treinar naquele dia, incluindo energia, confiança no movimento e resposta inicial ao aquecimento."]
+          ],
+          observe: [
+            "Energia geral.",
+            "Ritmo de movimento.",
+            "Fluidez da execução.",
+            "Hesitação.",
+            "Desconforto incomum.",
+            "Diferença entre o comportamento habitual e o de hoje."
+          ],
+          exemplo: [
+            "Um aluno tem agachamento planejado com carga moderada. No aquecimento, mesmo com carga leve, ele desce de forma instável, demora para iniciar cada repetição e relata que dormiu pouco.",
+            "Em vez de seguir direto para a carga prevista, você conversa brevemente, observa mais uma série leve e decide ajustar a demanda do primeiro bloco de trabalho."
+          ],
+          checklist: [
+            "Observei o estado geral na chegada?",
+            "Fiz perguntas breves sobre energia e rotina recente?",
+            "Usei o aquecimento para validar controle e fluidez?",
+            "Evitei transformar a conversa em interrogatório?",
+            "Lembrei que desconforto incomum não é diagnóstico?"
+          ],
+          frases: [
+            "Como está sua energia para o treino de hoje?",
+            "Notei que o aquecimento pareceu menos fluido. Como você sentiu o movimento?",
+            "Vamos usar essa primeira série para calibrar melhor a carga de hoje."
+          ],
+          cautela: "Você está coletando pistas para tomar uma decisão de treino, não fazendo diagnóstico clínico.",
+          recap: [
+            "A ficha orienta o norte, mas a prontidão mostra a condição de partida.",
+            "O aquecimento ajuda você a decidir se a proposta inicial ainda faz sentido."
+          ]
+        },
+        quiz: {
+          question: "A conversa inicial sobre sono e energia serve principalmente para que?",
+          options: [
+            "Diagnosticar o estado de saúde do aluno.",
+            "Coletar pistas para ajustar o treino daquele dia.",
+            "Substituir a observação técnica do aquecimento."
+          ],
+          answer: 1,
+          feedback: "A leitura inicial orienta o treino. Ela não vira diagnóstico nem substitui o aquecimento."
+        }
+      },
+      {
+        id: 4,
+        tag: "Triangulação",
+        title: "Intensidade na prática: RPE, RIR e técnica",
+        lead: "Nenhum indicador isolado manda na decisão.",
+        sections: {
+          abertura: [
+            "Para ajustar carga com critério, você precisa de ferramentas de leitura.",
+            "No treino de força, essas ferramentas combinam o que o aluno relata, o que você observa e o objetivo da série."
+          ],
+          ideia: "O ajuste seguro nasce da triangulação entre relato, técnica e contexto.",
+          entender: [
+            "RPE e RIR ajudam a conversar sobre esforço, mas não substituem a observação técnica.",
+            "O aluno iniciante pode estimar mal o próprio esforço.",
+            "Quando relato e técnica apontam direções diferentes, reabra a decisão. A qualidade técnica deve ter prioridade quando a segurança ou o objetivo da série estiverem comprometidos."
+          ],
+          definicoes: [
+            ["RPE", "Percepção subjetiva de esforço global. A pergunta central é: quão difícil foi?"],
+            ["RIR", "Estimativa de quantas repetições com boa técnica ainda seriam possíveis."],
+            ["Falha técnica", "Momento em que o aluno não consegue manter o padrão de movimento esperado para a série."]
+          ],
+          observe: [
+            "O aluno diz que está leve, mas a técnica oscila.",
+            "O aluno diz que está impossível, mas o movimento segue controlado.",
+            "O RIR relatado não combina com as últimas repetições.",
+            "O objetivo da série não combina com o esforço apresentado."
+          ],
+          exemplo: [
+            "Na rosca direta, o aluno termina 10 repetições e diz que faria mais umas 5.",
+            "Mas nas duas últimas repetições ele precisou balançar o tronco. O RIR relatado não combina com a qualidade da execução."
+          ],
+          checklist: [
+            "O esforço relatado combina com o que eu vi?",
+            "A técnica se manteve estável até a ultima repetição planejada?",
+            "Estou usando RIR para educar percepção, não como número absoluto?",
+            "O objetivo da série foi preservado?",
+            "Se relato e técnica conflitam, eu reabro a decisão?"
+          ],
+          frases: [
+            "Quantas repetições com essa mesma qualidade você ainda conseguiria fazer?",
+            "A execução sugere que chegamos perto do alvo de esforço de hoje.",
+            "Seu relato é importante. Vou cruzar isso com a qualidade do movimento para ajustar melhor."
+          ],
+          cautela: "RPE e RIR não são matemática exata. Use as escalas como ferramentas de calibragem e educação.",
+          recap: [
+            "O relato do aluno abre a conversa. A técnica observada ajuda a fechar a decisão.",
+            "Quanto melhor você cruza RPE, RIR, técnica e contexto, mais segura fica sua intervenção."
+          ]
+        },
+        quiz: {
+          question: "O aluno diz que sobrariam muitas repetições, mas compensou nas últimas. Melhor leitura?",
+          options: [
+            "Aceitar o RIR relatado como número exato.",
+            "Cruzar relato e técnica e considerar que ele se aproximou do limite técnico.",
+            "Ignorar completamente o relato em todas as situações."
+          ],
+          answer: 1,
+          feedback: "RPE/RIR abrem conversa, mas a execução observada calibra a decisão."
+        }
+      },
+      {
+        id: 5,
+        tag: "Ajuste agudo",
+        title: "Da leitura ao ajuste",
+        lead: "O ajuste ideal resolve o problema dominante com a menor mudança suficiente.",
+        sections: {
+          abertura: [
+            "Saber que algo precisa mudar é apenas o primeiro passo.",
+            "O segundo passo é decidir o que mudar sem descaracterizar o treino, confundir o aluno ou mexer em variáveis demais ao mesmo tempo."
+          ],
+          ideia: "O ajuste ideal resolve o problema dominante com a menor mudança suficiente.",
+          entender: [
+            "Você tem diferentes botões de ajuste: peso, repetições, amplitude, ritmo, intervalo e variação do exercício.",
+            "O erro comum é mexer em muitos botões ao mesmo tempo.",
+            "Antes de ajustar, pergunte: qual é o problema dominante agora?"
+          ],
+          definicoes: [
+            ["Menor mudança suficiente", "Princípio de ajustar o mínimo necessário para adequar a demanda ao objetivo da série."]
+          ],
+          actions: [
+            ["Manter", "Técnica consistente, esforço dentro do alvo e objetivo preservado.", "Manter a proposta.", "Manter também é decisão técnica."],
+            ["Progredir", "Técnica boa, controle estável e esforço abaixo do alvo.", "Aumentar um pouco a carga, repetições ou desafio.", "Progrida uma variável por vez."],
+            ["Reduzir", "Técnica oscilando, esforço acima do alvo ou perda de qualidade.", "Reduzir um pouco a carga ou diminuir repetições.", "Reduzir preserva o objetivo."],
+            ["Recuperar", "Queda relevante de rendimento entre as séries.", "Aumentar intervalo ou reduzir a demanda seguinte.", "Às vezes o problema é recuperação."],
+            ["Simplificar", "Movimento instável ou padrão motor se perdendo.", "Usar variação mais estável do mesmo padrão.", "Não troque exercício na primeira dificuldade."],
+            ["Modificar", "Desconforto incomum ou exercício fora da intenção.", "Alterar amplitude, trocar variação ou interromper.", "Não transforme isso em diagnóstico."]
+          ],
+          observe: [
+            "Qual é o problema dominante agora?",
+            "A técnica está boa, mas o esforço ficou baixo?",
+            "A técnica oscilou antes do alvo planejado?",
+            "O rendimento caiu por falta de recuperação?",
+            "Uma variação mais estável preservaria melhor o objetivo?"
+          ],
+          exemplo: [
+            "Um aluno está no leg press. Na segunda série, o ritmo e a fluidez caem de forma evidente antes do alvo planejado.",
+            "Uma decisão melhor pode ser encerrar a série naquele ponto, aumentar o intervalo e ajustar a próxima série para manter um padrão melhor."
+          ],
+          checklist: [
+            "Identifiquei o problema dominante?",
+            "Escolhi apenas uma variável principal para ajustar primeiro?",
+            "O ajuste preserva o objetivo da série?",
+            "Evitei trocar exercício sem necessidade?",
+            "Consegui explicar a mudança com segurança?"
+          ],
+          frases: [
+            "Sua técnica está boa e o esforço ficou abaixo do alvo. Vamos subir um pouco o desafio.",
+            "Notei que o ritmo e a fluidez mudaram. Vou ajustar a carga para protegermos o movimento.",
+            "O rendimento caiu entre as séries. Vamos dar mais tempo de descanso para recuperar a qualidade."
+          ],
+          cautela: "Evite a metralhadora de ajustes. Mudar muitas variáveis ao mesmo tempo tira sua referência.",
+          recap: [
+            "Leia a resposta, identifique o problema dominante, escolha o botão certo e comunique a decisão como profissional."
+          ]
+        },
+        quiz: {
+          question: "A técnica caiu e você decide trocar peso, ritmo, amplitude e exercício ao mesmo tempo. Qual problema?",
+          options: [
+            "Nenhum, quanto mais ajustes melhor.",
+            "Você perde referência sobre qual mudança resolveu a resposta.",
+            "Isso é necessário sempre que a série fica difícil."
+          ],
+          answer: 1,
+          feedback: "A menor mudança suficiente protege a referência do treino e melhora a decisão."
+        }
+      },
+      {
+        id: 6,
+        tag: "Fadiga",
+        title: "Sinais de fadiga como pistas operacionais",
+        lead: "Sinais visuais são pistas operacionais, não medidas de precisão.",
+        sections: {
+          abertura: [
+            "Perguntar como está o peso é apenas uma parte do trabalho.",
+            "O personal trainer atento também aprende a ler o que a execução está mostrando durante a série."
+          ],
+          ideia: "Sinais visuais são pistas operacionais para orientar sua decisão, não medidas de precisão.",
+          entender: [
+            "Existe diferença entre esforço esperado e fadiga que muda a qualidade do movimento.",
+            "O problema aparece quando a demanda começa a desorganizar o padrão de execução, reduzir a fluidez ou gerar compensações relevantes.",
+            "Você não está medindo fadiga como um equipamento. Você está identificando pistas que merecem atenção."
+          ],
+          definicoes: [
+            ["Sinais de fadiga", "Alterações visíveis na execução, no ritmo ou no comportamento que sugerem redução da capacidade de manter força com qualidade técnica."]
+          ],
+          signals: [
+            ["Lentidão evidente", "O movimento fica visivelmente mais lento, especialmente na fase de maior esforço."],
+            ["Perda de fluidez", "O movimento deixa de ser contínuo e passa a ter pausas, tremores ou solavancos."],
+            ["Encurtamento de amplitude", "O aluno reduz o movimento sem orientação técnica."],
+            ["Compensações", "Tronco balança, joelho oscila, quadril muda de posição ou o corpo busca atalhos."],
+            ["Respiração desorganizada", "O aluno perde o controle da expiração ou prende o ar por tempo excessivo."],
+            ["Hesitação", "O aluno demora mais entre repetições, como se precisasse tomar coragem."]
+          ],
+          observe: [
+            "Lentidão evidente.",
+            "Perda de fluidez.",
+            "Amplitude encurtando.",
+            "Compensações relevantes.",
+            "Relato de esforço que não combina com a qualidade."
+          ],
+          exemplo: [
+            "No agachamento, o aluno realiza 6 repetições com bom controle. Na repetição seguinte, a subida fica claramente menos fluida e o joelho começa a oscilar.",
+            "Isso sugere que a qualidade técnica está caindo antes do alvo planejado. Você pode encerrar a série naquele ponto ou ajustar a próxima série."
+          ],
+          checklist: [
+            "Identifiquei lentidão evidente?",
+            "Notei perda de fluidez?",
+            "A amplitude encurtou sem orientação?",
+            "Surgiram compensações relevantes?",
+            "Estou tratando sinais como pistas, não como medidas?"
+          ],
+          frases: [
+            "A execução sugere que chegamos ao limite de qualidade de hoje. Vamos encerrar esta série.",
+            "Notei que o ritmo do movimento mudou. Como você sentiu o esforço para manter esse padrão?",
+            "Vou ajustar a carga para mantermos a fluidez nas próximas repetições."
+          ],
+          cautela: "Não somos sensores de precisão. Não tente adivinhar percentuais de perda de velocidade a olho nu.",
+          recap: [
+            "Aprender para onde olhar transforma a série em informação.",
+            "Sinais visuais não são diagnósticos. Eles são pistas que ajudam você a proteger a qualidade do movimento."
+          ]
+        },
+        quiz: {
+          question: "Você percebe perda de fluidez e compensações. O que isso significa?",
+          options: [
+            "É uma pista para revisar a demanda, não uma medida exata de fadiga.",
+            "É prova de que o aluno perdeu um percentual específico de velocidade.",
+            "Sempre significa que o exercício deve ser excluído."
+          ],
+          answer: 0,
+          feedback: "Sinais visuais orientam julgamento. Eles não medem fadiga com precisão."
+        }
+      },
+      {
+        id: 7,
+        tag: "Comunicação",
+        title: "Comunicação profissional do ajuste",
+        lead: "A comunicação faz parte do controle de carga.",
+        sections: {
+          abertura: [
+            "A forma como você comunica uma mudança de carga é tão importante quanto o ajuste técnico.",
+            "No atendimento profissional, o aluno precisa perceber que a mudança tem critério."
+          ],
+          ideia: "A comunicação faz parte do controle de carga.",
+          entender: [
+            "Um erro comum do trainee é parecer inseguro ao ajustar.",
+            "O aluno deve ser ouvido, mas a condução profissional é sua.",
+            "Para comunicar melhor, use três passos: observação, motivo e ação."
+          ],
+          definicoes: [
+            ["Postura profissional", "Capacidade de conduzir o treino com critérios técnicos observados, comunicando decisões de forma clara e segura."]
+          ],
+          observe: [
+            "Diga o que você viu.",
+            "Explique o motivo técnico em linguagem simples.",
+            "Comande a mudança imediata.",
+            "Ouça o aluno sem terceirizar a decisão."
+          ],
+          exemplo: [
+            "Durante a rosca direta, você percebe que o ritmo mudou e o aluno começou a compensar com o tronco.",
+            "Frase insegura: Parece que está pesado, né? Quer tirar um pouco?",
+            "Frase profissional: Notei que o ritmo mudou e você começou a compensar com o tronco. Vou reduzir a carga para mantermos o foco no bíceps até o final."
+          ],
+          checklist: [
+            "Relatei o sinal que observei?",
+            "Expliquei o motivo técnico em linguagem simples?",
+            "Comandei a ação de forma direta?",
+            "Evitei transferir a decisão ao aluno?",
+            "Mantive a fala curta?"
+          ],
+          frases: [
+            "Notei que o ritmo mudou. Para preservarmos o padrão, vou ajustar a carga.",
+            "Sua técnica está excelente. Vamos subir o desafio para o alvo de hoje.",
+            "O rendimento caiu entre as séries. Vamos dar um tempo extra de descanso.",
+            "Vou ajustar o peso para proteger seu movimento."
+          ],
+          cautela: "Não transforme o ajuste em uma aula longa durante a série. Seja breve, claro e profissional.",
+          recap: [
+            "O personal comunica decisão, não dúvida.",
+            "Use o modelo: observei, motivo, ação."
+          ]
+        },
+        quiz: {
+          question: "Qual fala mostra melhor postura profissional?",
+          options: [
+            "Você acha que eu aumento?",
+            "Quer tirar um pouco?",
+            "Notei que o ritmo mudou. Vou ajustar a carga para preservar o padrão."
+          ],
+          answer: 2,
+          feedback: "A fala profissional comunica observação, motivo e ação sem transferir a decisão."
+        }
+      },
+      {
+        id: 8,
+        tag: "Síntese",
+        title: "Checklist final de raciocínio",
+        lead: "O que está acontecendo agora e qual é a menor mudança suficiente?",
+        sections: {
+          abertura: [
+            "Agora o desafio é levar esse olhar atento para o atendimento real.",
+            "Ajustar carga é ler a realidade da sessão e agir com critério."
+          ],
+          ideia: "O bom treinador não depende de decorar respostas prontas. Ele aprende a perguntar no momento certo.",
+          entender: [
+            "O ajuste agudo é uma ferramenta para a sessão de hoje.",
+            "O foco deste ebook é público geral: intensidade adequada, qualidade técnica e comunicação profissional.",
+            "Não buscamos falha a qualquer custo, performance esportiva ou conduta clínica."
+          ],
+          definicoes: [
+            ["Menor mudança suficiente", "Intervir o mínimo necessário para que o aluno volte a uma zona adequada de esforço, controle e qualidade."]
+          ],
+          observe: [
+            "Contexto: como o aluno chegou hoje?",
+            "Execução: como está o movimento?",
+            "Relato: RPE/RIR combinam com o que estou vendo?",
+            "Fadiga: existem pistas relevantes durante a série?",
+            "Decisão: manter, progredir, reduzir, recuperar, simplificar ou modificar?",
+            "Comunicação: como explicar isso com segurança?"
+          ],
+          exemplo: [
+            "Um aluno está agachando. A ficha pede 10 repetições. No aquecimento, ele parece travado. Na primeira série, relata esforço muito alto e a fluidez cai antes do alvo previsto.",
+            "Você identifica que a demanda está acima do ideal. A decisão é reduzir a carga de forma proporcional, preservar a fluidez e comunicar que o ajuste serve para manter a técnica do dia."
+          ],
+          checklist: [
+            "O ajuste respeita a qualidade técnica?",
+            "Escolhi a variável mais simples para ajustar primeiro?",
+            "O relato do aluno combina com a execução?",
+            "Usei sinais visuais como pistas, não como medidas?",
+            "Comuniquei a mudança com postura profissional?",
+            "Evitei transformar o checklist em protocolo rígido?"
+          ],
+          frases: [
+            "Vamos ajustar para manter o objetivo da série.",
+            "A resposta de hoje pede uma mudança pequena para preservar a qualidade.",
+            "O que está acontecendo agora e qual é a menor mudança suficiente?"
+          ],
+          cautela: "Não transforme este guia em algoritmo. Registro histórico, periodização complexa e ajustes crônicos ficam para outro momento da formação.",
+          recap: [
+            "Carga não é só peso.",
+            "Intensidade é resposta individual.",
+            "Ajustar é inteligência técnica em tempo real.",
+            "Pergunta-guia final: o que está acontecendo agora e qual é a menor mudança suficiente?"
+          ]
+        },
+        quiz: {
+          question: "Qual pergunta fecha melhor o raciocínio da aula?",
+          options: [
+            "Qual carga estava na ficha?",
+            "O que está acontecendo agora e qual é a menor mudança suficiente?",
+            "Como posso fazer o aluno chegar sempre a falha?"
+          ],
+          answer: 1,
+          feedback: "A pergunta-guia integra contexto, técnica, relato e ajuste proporcional."
+        }
+      }
+    ];
+
+    const finalPage = {
+      id: "finish",
+      title: "Finalização",
+      tag: "Síntese técnica"
+    };
+
+    const pageOrder = ["home", ...chapters.map(chapter => chapter.id), "finish"];
+
+    const chapterDeepDive = {
+      1: [
+        "Nos slides, a ideia de abertura é direta: controle de carga acontece no atendimento, não apenas na ficha. Por isso, o trainee precisa abandonar a expectativa de que o treino prescrito resolverá tudo sozinho.",
+        "A ficha é uma hipótese organizada. Ela indica o caminho provável, mas a sessão mostra se aquele caminho ainda combina com o aluno naquele dia. Sono ruim, rotina pesada, insegurança no exercício ou uma resposta melhor que o esperado mudam a leitura.",
+        "Quando o personal ajusta com critério, ele não está mostrando dúvida. Ele está mostrando que sabe comparar plano, contexto e execução antes de insistir em uma carga que deixou de fazer sentido."
+      ],
+      2: [
+        "A apresentação reforça que carga não é só peso. Peso, repetições, séries, amplitude, ritmo, intervalo e variação são botões diferentes da mesma mesa de controle.",
+        "A carga externa é aquilo que o personal propõe. A resposta do aluno mostra como essa proposta chega no corpo naquele momento. Dois alunos podem levantar o mesmo peso e viver intensidades muito diferentes.",
+        "Esse vocabulário é importante porque evita uma atuação pobre, limitada ao aumento ou redução de anilhas. Às vezes o melhor ajuste é ritmo, amplitude, intervalo ou uma variação mais estável."
+      ],
+      3: [
+        "A leitura inicial aparece nos slides como uma decisão que começa antes da série efetiva. O aluno já oferece pistas na chegada, na conversa breve, no aquecimento e nas primeiras repetições.",
+        "Perguntar sobre sono, energia e rotina recente não transforma o trainee em avaliador clínico. Essas perguntas servem apenas para contextualizar a sessão e calibrar a demanda do treino.",
+        "O aquecimento é o teste de realidade. Ele prepara, mas também mostra fluidez, controle, confiança no padrão e compatibilidade entre a ficha e o estado atual do aluno."
+      ],
+      4: [
+        "RPE e RIR entram como ferramentas de conversa e educação da percepção. Eles ajudam o aluno a nomear esforço, mas não substituem a leitura da técnica.",
+        "O trainee deve cruzar quatro pontos: relato do aluno, técnica observada, contexto do dia e objetivo da série. Quando um desses pontos contradiz os outros, a decisão precisa ser reaberta.",
+        "Em iniciantes, esse cuidado é ainda mais importante. O aluno pode superestimar ou subestimar o esforço porque ainda não reconhece bem a diferença entre desconforto, desafio e perda de qualidade."
+      ],
+      5: [
+        "A matriz dos slides organiza a passagem da leitura para a ação: manter, progredir, reduzir, recuperar, simplificar ou modificar. Essas opções não são comandos automáticos; são possibilidades de decisão.",
+        "O ponto central é escolher o problema dominante. Se a técnica está boa e o esforço ficou baixo, talvez caiba progredir. Se o rendimento caiu entre séries, talvez o problema seja recuperação. Se o movimento desorganizou, talvez simplificar seja melhor que insistir no peso.",
+        "A menor mudança suficiente protege a referência do treino. Quando o trainee muda muitas variáveis ao mesmo tempo, ele perde clareza sobre o que realmente melhorou ou piorou a resposta do aluno."
+      ],
+      6: [
+        "O bloco de fadiga dos slides foi criado para ensinar o trainee a olhar melhor durante a execução. O aluno pode sempre relatar percepção, mas o personal precisa saber para onde olhar.",
+        "Lentidão evidente, perda de fluidez, amplitude encurtando e compensações são pistas de que a demanda pode estar mudando a qualidade do movimento. Elas não são medidas laboratoriais.",
+        "A cautela é essencial: o olho do treinador não mede percentual de perda de velocidade. Ele identifica sinais práticos que pedem julgamento, conversa e, se necessário, ajuste."
+      ],
+      7: [
+        "A comunicação aparece como parte da competência técnica. O aluno não precisa perceber o ajuste como improviso; ele precisa perceber direção.",
+        "A estrutura mais segura é curta: observei, motivo, ação. Primeiro diga o sinal percebido, depois explique a razão simples e finalize com o comando do ajuste.",
+        "Ouvir o aluno continua importante, mas ouvir não é transferir a decisão. O trainee escuta, cruza com a execução e conduz."
+      ],
+      8: [
+        "A síntese final conecta todo o ebook em uma pergunta: o que está acontecendo agora e qual é a menor mudança suficiente?",
+        "Essa pergunta evita dois extremos: seguir a ficha cegamente ou mudar tudo por ansiedade. Ela força o trainee a ler contexto, execução, relato, fadiga e objetivo antes de agir.",
+        "O material termina como uma lógica de julgamento, não como um algoritmo. A competência esperada é decidir melhor no chão da academia, com linguagem profissional e foco no público geral."
+      ]
+    };
+
+    const extraQuizBank = {
+      1: [
+        {
+          question: "A ficha previa carga alta, mas o aquecimento ficou travado. Qual atitude preserva melhor a lógica da aula?",
+          options: ["Ignorar o aquecimento, porque a ficha já foi planejada.", "Usar o aquecimento para recalibrar a primeira série efetiva.", "Cancelar todo o treino imediatamente."],
+          answer: 1,
+          feedback: "O aquecimento é dado de realidade. Ele não cancela automaticamente a sessão, mas orienta a recalibragem."
+        },
+        {
+          question: "Ajustar a carga durante a sessão deve ser entendido como:",
+          options: ["Sinal de improviso sem critério.", "Competência técnica de leitura e decisão.", "Prova de que a ficha estava errada."],
+          answer: 1,
+          feedback: "Ajustar com critério demonstra atenção técnica ao aluno real, não fraqueza do planejamento."
+        }
+      ],
+      2: [
+        {
+          question: "Qual opção é um botão de ajuste além do peso?",
+          options: ["Amplitude e ritmo.", "Cor da máquina.", "Horário em que a ficha foi impressa."],
+          answer: 0,
+          feedback: "Amplitude e ritmo mudam a demanda do exercício e podem ser ajustados de forma aguda."
+        },
+        {
+          question: "Quando dois alunos usam o mesmo peso com respostas muito diferentes, isso mostra que:",
+          options: ["A carga externa explica tudo.", "A intensidade depende também da resposta individual.", "O aluno mais cansado está necessariamente desmotivado."],
+          answer: 1,
+          feedback: "A intensidade prática nasce da relação entre proposta externa e resposta do aluno."
+        }
+      ],
+      3: [
+        {
+          question: "Perguntar sobre sono e energia antes do treino serve para:",
+          options: ["Diagnosticar problemas clínicos.", "Contextualizar a sessão e orientar ajustes.", "Transferir a decisão para o aluno."],
+          answer: 1,
+          feedback: "A conversa é breve e operacional: ela ajuda a entender a prontidão para treinar."
+        },
+        {
+          question: "Se o aluno diz que está normal, mas o aquecimento perdeu fluidez, o trainee deve:",
+          options: ["Considerar apenas o relato.", "Considerar apenas a ficha.", "Cruzar relato, aquecimento e execução antes de decidir."],
+          answer: 2,
+          feedback: "Aquecimento e relato são informações complementares; nenhum deles trabalha sozinho."
+        }
+      ],
+      4: [
+        {
+          question: "RPE e RIR devem ser usados principalmente como:",
+          options: ["Ferramentas de calibragem e conversa.", "Medidas matemáticas perfeitas.", "Substitutos da observação técnica."],
+          answer: 0,
+          feedback: "As escalas ajudam a educar percepção, mas precisam ser cruzadas com a técnica."
+        },
+        {
+          question: "Se o aluno relata esforço baixo, mas a execução degrada, a melhor decisão é:",
+          options: ["Aceitar o relato como absoluto.", "Reabrir a leitura e priorizar a qualidade técnica.", "Aumentar o peso para testar motivação."],
+          answer: 1,
+          feedback: "Quando relato e execução entram em conflito, a técnica ajuda a proteger o objetivo e a segurança da série."
+        }
+      ],
+      5: [
+        {
+          question: "A menor mudança suficiente significa:",
+          options: ["Alterar várias variáveis para garantir resultado.", "Mexer no mínimo necessário para resolver o problema dominante.", "Nunca modificar a ficha."],
+          answer: 1,
+          feedback: "O ajuste proporcional preserva a referência do treino e facilita entender a resposta do aluno."
+        },
+        {
+          question: "Se a técnica está boa e o esforço ficou abaixo do alvo, a decisão provável é:",
+          options: ["Progredir com cautela em uma variável.", "Reduzir a carga imediatamente.", "Trocar o exercício sem necessidade."],
+          answer: 0,
+          feedback: "Progredir pode ser adequado quando a resposta ficou fácil demais para o objetivo da série."
+        }
+      ],
+      6: [
+        {
+          question: "Lentidão evidente e perda de fluidez devem ser tratadas como:",
+          options: ["Pistas operacionais para julgamento.", "Medições exatas de fadiga.", "Prova de que o aluno deve parar de treinar."],
+          answer: 0,
+          feedback: "Sinais visuais ajudam a decidir, mas não medem fadiga com precisão."
+        },
+        {
+          question: "Em iniciantes, perda de técnica pode indicar:",
+          options: ["Apenas preguiça.", "Fadiga, dificuldade técnica ou baixa familiaridade com o movimento.", "Sempre falha muscular máxima."],
+          answer: 1,
+          feedback: "O contexto importa. Nem toda perda de técnica é a mesma coisa."
+        }
+      ],
+      7: [
+        {
+          question: "Qual sequência comunica melhor um ajuste?",
+          options: ["Dúvida, pergunta ao aluno, tentativa.", "Observei, motivo, ação.", "Bronca, correção longa, novo exercício."],
+          answer: 1,
+          feedback: "A estrutura observei -> motivo -> ação passa segurança sem virar aula longa."
+        },
+        {
+          question: "Qual frase deve ser evitada?",
+          options: ["Vou ajustar o peso para proteger seu movimento.", "Notei que o ritmo mudou.", "Você acha que eu devo aumentar?"],
+          answer: 2,
+          feedback: "Essa frase transfere a decisão técnica para o aluno e passa insegurança."
+        }
+      ],
+      8: [
+        {
+          question: "A pergunta-guia final ajuda o trainee a evitar:",
+          options: ["Seguir cegamente a ficha ou mudar tudo por ansiedade.", "Observar a execução.", "Comunicar o ajuste."],
+          answer: 0,
+          feedback: "A pergunta-guia força uma decisão proporcional baseada no que está acontecendo agora."
+        },
+        {
+          question: "O checklist final deve ser usado como:",
+          options: ["Algoritmo rígido.", "Mapa de estudo para organizar o julgamento.", "Substituto da atuação do professor."],
+          answer: 1,
+          feedback: "O checklist organiza o raciocínio, mas não substitui o julgamento profissional."
+        }
+      ]
+    };
+
+    const STORAGE_KEY = "xsteam-carga-ebook-v1";
+    const root = document.getElementById("appRoot");
+    const chapterMenuBtn = document.getElementById("chapterMenuBtn");
+    const chapterMenu = document.getElementById("chapterMenu");
+    const chapterMenuList = document.getElementById("chapterMenuList");
+    const chapterMenuClose = document.getElementById("chapterMenuClose");
+    const infoPopup = document.getElementById("infoPopup");
+    const infoPopupBackdrop = document.getElementById("infoPopupBackdrop");
+    const infoPopupClose = document.getElementById("infoPopupClose");
+    const popupTitle = document.getElementById("popupTitle");
+    const popupText = document.getElementById("popupText");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const homeBtn = document.getElementById("homeBtn");
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+    const quizText = document.getElementById("quizText");
+    const chapterMeta = document.getElementById("chapterMeta");
+
+    const defaultState = {
+      view: "home",
+      page: 0,
+      chapter: 1,
+      completed: {},
+      quiz: {}
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const loaded = { ...defaultState, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") };
+        loaded.quiz = Object.fromEntries(
+          Object.entries(loaded.quiz || {}).filter(([key]) => /^\d+-\d+$/.test(key))
+        );
+        return normalizeState(loaded);
+      } catch {
+        return { ...defaultState };
+      }
+    }
+
+    function normalizeState(value) {
+      const normalized = { ...defaultState, ...value };
+      if (typeof normalized.page !== "number" || normalized.page < 0 || normalized.page >= pageOrder.length) {
+        normalized.page = pageFromView(normalized.view, normalized.chapter);
+      }
+      syncViewFromPage(normalized);
+      return normalized;
+    }
+
+    function pageFromView(view, chapterId) {
+      if (view === "home") return 0;
+      if (view === "finish") return pageOrder.length - 1;
+      const index = pageOrder.indexOf(chapterId);
+      return index >= 0 ? index : 0;
+    }
+
+    function syncViewFromPage(target = state) {
+      const page = pageOrder[target.page] ?? "home";
+      if (page === "home") {
+        target.view = "home";
+        target.chapter = 1;
+      } else if (page === "finish") {
+        target.view = "finish";
+      } else {
+        target.view = "chapter";
+        target.chapter = page;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function popupButton(className, title, content, hint, popupContext) {
+      const popupTitleText = popupContext || title;
+      return `
+        <button class="${className}" type="button" data-popup-title="${escapeHTML(popupTitleText)}" data-popup-text="${escapeHTML(content)}">
+          <strong>${escapeHTML(title)}</strong>
+          ${hint ? `<div class="card-hint">${escapeHTML(hint)}</div>` : ""}
+        </button>
+      `;
+    }
+
+    function openInfoPopup(title, text) {
+      popupTitle.textContent = title;
+      popupText.textContent = text;
+      infoPopup.classList.add("is-open");
+      infoPopup.setAttribute("aria-hidden", "false");
+      document.body.classList.add("popup-open");
+      infoPopupClose.focus();
+    }
+
+    function closeInfoPopup() {
+      infoPopup.classList.remove("is-open");
+      infoPopup.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("popup-open");
+    }
+
+    function bindInfoPopups() {
+      root.querySelectorAll("[data-popup-title]").forEach(btn => {
+        btn.addEventListener("click", () => openInfoPopup(btn.dataset.popupTitle, btn.dataset.popupText));
+      });
+    }
+
+    function setView(view, chapterId = state.chapter) {
+      state.view = view;
+      if (view === "chapter") state.chapter = chapterId;
+      state.page = pageFromView(view, chapterId);
+      syncViewFromPage();
+      saveState();
+      closeChapterMenu();
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function getQuizzes(chapter) {
+      return [chapter.quiz, ...(extraQuizBank[chapter.id] || [])];
+    }
+
+    function answeredQuizCount() {
+      return Object.keys(state.quiz).filter(key => state.quiz[key] !== undefined).length;
+    }
+
+    function totalQuizCount() {
+      return chapters.reduce((sum, chapter) => sum + getQuizzes(chapter).length, 0);
+    }
+
+    function completionPercent() {
+      const doneChapters = Object.values(state.completed).filter(Boolean).length;
+      const total = chapters.length + totalQuizCount();
+      return Math.round(((doneChapters + answeredQuizCount()) / total) * 100);
+    }
+
+    function updateMeta() {
+      const percent = completionPercent();
+      const doneQuizzes = answeredQuizCount();
+      progressFill.style.width = `${percent}%`;
+      progressText.textContent = `${percent}% concluído`;
+      quizText.textContent = `${doneQuizzes} decisões treinadas`;
+
+      if (state.view === "home") {
+        chapterMeta.textContent = "Capítulo inicial";
+        prevBtn.disabled = true;
+        nextBtn.disabled = false;
+        chapterMenuBtn.className = "chapter-menu-label";
+        chapterMenuBtn.textContent = "Capa e instruções";
+        chapterMenuBtn.disabled = true;
+      } else if (state.view === "finish") {
+        chapterMeta.textContent = "Finalização";
+        prevBtn.disabled = false;
+        nextBtn.disabled = true;
+        chapterMenuBtn.className = "chapter-menu-btn";
+        chapterMenuBtn.textContent = "Finalização";
+        chapterMenuBtn.disabled = false;
+      } else {
+        chapterMeta.textContent = `Capítulo ${state.chapter} de ${chapters.length}`;
+        prevBtn.disabled = false;
+        nextBtn.disabled = false;
+        const chapter = chapters.find(ch => ch.id === state.chapter);
+        chapterMenuBtn.className = "chapter-menu-btn";
+        chapterMenuBtn.textContent = chapter ? `${chapter.id}. ${chapter.title}` : "Capítulos";
+        chapterMenuBtn.disabled = false;
+      }
+    }
+
+    function buildMenu() {
+      chapterMenuList.innerHTML = `
+        <button class="chapter-menu-item ${state.view === "home" ? "is-active" : ""}" type="button" data-home="true">
+          <span>00</span>
+          <strong>Introdução</strong>
+        </button>
+      ` + chapters.map(ch => `
+        <button class="chapter-menu-item ${state.view === "chapter" && state.chapter === ch.id ? "is-active" : ""}" type="button" data-go="${ch.id}">
+          <span>${String(ch.id).padStart(2, "0")}</span>
+          <strong>${escapeHTML(ch.title)}</strong>
+        </button>
+      `).join("") + `
+        <button class="chapter-menu-item ${state.view === "finish" ? "is-active" : ""}" type="button" data-finish="true">
+          <span>✓</span>
+          <strong>Finalização</strong>
+        </button>
+      `;
+
+      const homeMenuBtn = chapterMenuList.querySelector("[data-home]");
+      homeMenuBtn.addEventListener("click", () => setView("home"));
+
+      chapterMenuList.querySelectorAll("[data-go]").forEach(btn => {
+        btn.addEventListener("click", () => setView("chapter", Number(btn.dataset.go)));
+      });
+
+      const finishBtn = chapterMenuList.querySelector("[data-finish]");
+      finishBtn.addEventListener("click", () => setView("finish"));
+    }
+
+    function openChapterMenu() {
+      if (state.view === "home") return;
+      buildMenu();
+      chapterMenu.classList.add("is-open");
+      chapterMenu.setAttribute("aria-hidden", "false");
+    }
+
+    function closeChapterMenu() {
+      chapterMenu.classList.remove("is-open");
+      chapterMenu.setAttribute("aria-hidden", "true");
+    }
+
+    function currentPageIndex() {
+      return state.page;
+    }
+
+    function goToPageIndex(index) {
+      const safeIndex = Math.max(0, Math.min(index, pageOrder.length - 1));
+      const page = pageOrder[safeIndex];
+      if (page === "home") return setView("home");
+      if (page === "finish") return setView("finish");
+      return setView("chapter", page);
+    }
+
+    function renderHome() {
+      const tiles = chapters.map(ch => `
+        <button class="chapter-tile ${state.completed[ch.id] ? "is-done" : ""}" type="button" data-go="${ch.id}">
+          <span>${String(ch.id).padStart(2, "0")}</span>
+          <strong>${escapeHTML(ch.title)}</strong>
+        </button>
+      `).join("");
+
+      root.innerHTML = `
+        <section class="home is-active">
+          <div class="hero">
+            <div>
+              <span class="kicker">Treinamento interno</span>
+              <h1>Ajuste de Carga na Prática</h1>
+              <p class="hero-lead">Um ebook interativo para treinar sua leitura da sessão, cruzar contexto, técnica e esforço, e decidir a menor mudança suficiente no atendimento real.</p>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="hero-x"></div>
+              <div class="scanlines"></div>
+              <div class="hero-panel">
+                <span class="kicker">Pergunta-guia</span>
+                <p style="margin:10px 0 0;line-height:1.3;font-weight:900;">O que está acontecendo agora e qual é a menor mudança suficiente?</p>
+              </div>
+            </div>
+            ${panel("Como usar este ebook", "dark", `
+              <div class="home-guide">
+                <div class="home-guide-item"><span>1</span><div><strong>Siga a ordem se for seu primeiro contato.</strong><br>Use o botão "Começar estudo" para avançar do capítulo inicial até a síntese final.</div></div>
+                <div class="home-guide-item"><span>2</span><div><strong>Use o mapa quando quiser revisar.</strong><br>Os blocos abaixo levam direto ao capítulo escolhido, sem precisar abrir menu.</div></div>
+                <div class="home-guide-item"><span>3</span><div><strong>Toque nos cards durante a leitura.</strong><br>Eles mostram por que cada observação, sinal ou botão de ajuste importa na decisão.</div></div>
+                <div class="home-guide-item"><span>4</span><div><strong>Responda às decisões rápidas.</strong><br>As perguntas finais treinam julgamento prático, não memorização de frase pronta.</div></div>
+              </div>
+            `)}
+            <div>
+              <span class="kicker">Mapa do ebook</span>
+              <div class="chapter-grid">${tiles}</div>
+            </div>
+            <div class="hero-actions">
+              <button class="btn btn-primary" type="button" data-go="1">Começar estudo</button>
+              <button class="btn btn-secondary" type="button" id="resetBtn">Reiniciar progresso</button>
+            </div>
+          </div>
+        </section>
+      `;
+
+      root.querySelectorAll("[data-go]").forEach(btn => {
+        btn.addEventListener("click", () => setView("chapter", Number(btn.dataset.go)));
+      });
+
+      root.querySelector("#resetBtn").addEventListener("click", () => {
+        state = { ...defaultState };
+        saveState();
+        render();
+      });
+    }
+
+    function renderChapter(chapter) {
+      const s = chapter.sections;
+      root.innerHTML = `
+        <article class="chapter is-active">
+          <header class="chapter-head" data-num="${String(chapter.id).padStart(2, "0")}">
+            <span class="kicker">${escapeHTML(chapter.tag)}</span>
+            <h2>${escapeHTML(chapter.title)}</h2>
+            <p>${escapeHTML(chapter.lead)}</p>
+          </header>
+          <div class="section-stack">
+            ${panel("Abertura", "dark", paragraphs(s.abertura))}
+            ${panel("Ideia central", "lime", `<div class="idea-card"><div>${escapeHTML(s.ideia)}</div></div>`)}
+            ${panel("O que você precisa entender", "", paragraphs(s.entender))}
+            ${panel("Aprofunde a lógica", "dark", paragraphs(chapterDeepDive[chapter.id] || []))}
+            ${definitionPanel(s.definicoes)}
+            ${s.botões ? buttonsPanel(s.botões) : ""}
+            ${s.actions ? actionPanel(s.actions) : ""}
+            ${s.signals ? signalPanel(s.signals) : ""}
+            ${s.observe ? panel("Observe antes de ajustar", "", list(s.observe, chapter.id)) : ""}
+            ${panel("Exemplo operacional", "dark", `<div class="example">${paragraphs(s.exemplo)}</div>`)}
+            ${checklistPanel(s.checklist)}
+            ${panel("Frases profissionais", "", `<div class="phrase-list">${s.frases.map(p => `<div class="phrase">${escapeHTML(p)}</div>`).join("")}</div>`)}
+            ${panel("Cautela", "dark", paragraphs([s.cautela]))}
+            ${panel("Recapitule", "", `<div class="recap">${s.recap.map(line => `<div class="recap-line">${escapeHTML(line)}</div>`).join("")}</div>`)}
+            ${quizPanel(chapter)}
+            <div class="complete-card">
+              <strong>Fechamento do capítulo</strong>
+              <span>Marque como concluído quando tiver lido, respondido às decisões rápidas e revisado o checklist.</span>
+              <button class="btn btn-primary" type="button" id="completeBtn">${state.completed[chapter.id] ? "Capítulo concluído" : "Marcar como concluído"}</button>
+            </div>
+          </div>
+        </article>
+      `;
+
+      root.querySelectorAll("[data-answer]").forEach(btn => {
+        btn.addEventListener("click", () => handleQuiz(chapter.id, Number(btn.dataset.quiz), Number(btn.dataset.answer)));
+      });
+
+      bindInfoPopups();
+
+      root.querySelector("#completeBtn").addEventListener("click", () => {
+        state.completed[chapter.id] = true;
+        saveState();
+        render();
+      });
+    }
+
+    function panel(label, mode, content) {
+      return `
+        <section class="panel ${mode}">
+          <span class="section-label">${escapeHTML(label)}</span>
+          ${content}
+        </section>
+      `;
+    }
+
+    function paragraphs(items) {
+      return items.map(p => `<p>${escapeHTML(p)}</p>`).join("");
+    }
+
+    function explainItem(item, chapterId) {
+      const lower = item.toLowerCase();
+      if (lower.includes("aquecimento")) return "O aquecimento é a primeira validação prática da ficha. Ele mostra se a proposta planejada conversa com o estado real do aluno antes da série efetiva.";
+      if (lower.includes("técnica") || lower.includes("execução")) return "A técnica mostra se a demanda ainda preserva o objetivo do exercício. Quando a qualidade cai, o ajuste deixa de ser detalhe e passa a proteger a intenção da série.";
+      if (lower.includes("ritmo") || lower.includes("fluidez")) return "Ritmo e fluidez ajudam a perceber quando o esforço mudou. Não é uma medida exata, mas é uma pista forte para revisar a demanda.";
+      if (lower.includes("amplitude")) return "Amplitude encurtando sem orientação pode indicar que a carga, a fadiga ou a insegurança estão mudando a execução.";
+      if (lower.includes("intervalo") || lower.includes("recuper")) return "Às vezes o problema não é o peso, mas a recuperação insuficiente entre séries. O intervalo também é um botão de ajuste.";
+      if (lower.includes("relato") || lower.includes("rpe") || lower.includes("rir")) return "O relato do aluno abre a conversa, mas precisa ser cruzado com o que você vê na execução e com o objetivo da série.";
+      if (lower.includes("desconforto")) return "Desconforto incomum não é diagnóstico. É um alerta para ajustar, modificar ou interromper dentro do limite profissional do personal trainer.";
+      if (lower.includes("comunicação") || lower.includes("explicar")) return "Comunicar bem evita que o ajuste pareça improviso. O aluno precisa perceber observação, motivo e ação.";
+      if (chapterId === 1) return "Essa pergunta ajuda a comparar a ficha com a realidade do atendimento. O foco é decidir se o plano ainda faz sentido hoje.";
+      if (chapterId === 5) return "Esse item ajuda a escolher qual botão mexer primeiro, sem perder a referência do treino.";
+      if (chapterId === 6) return "Esse sinal não decide sozinho, mas ajuda a compor o quadro de fadiga e qualidade de movimento.";
+      return "Use este ponto como pista operacional. Ele não decide sozinho, mas ajuda a formar uma leitura mais segura da sessão.";
+    }
+
+    function list(items, chapterId) {
+      return `<div class="def-grid">${items.map(item => `
+        ${popupButton("mini-card", item, explainItem(item, chapterId), "Toque para entender")}
+      `).join("")}</div>`;
+    }
+
+    function definitionPanel(defs) {
+      return panel("Definição rápida", "", `
+        <div class="def-grid">
+          ${defs.map(([title, text]) => `
+            <button class="mini-card" type="button" data-popup-title="${escapeHTML(title)}" data-popup-text="${escapeHTML(explainItem(`${title} ${text}`, 0))}">
+              <strong>${escapeHTML(title)}</strong>
+              <span>${escapeHTML(text)}</span>
+              <div class="card-hint">Toque para contextualizar</div>
+            </button>
+          `).join("")}
+        </div>
+      `);
+    }
+
+    function buttonsPanel(buttons) {
+      return panel("Botões de ajuste", "dark", `
+        <div class="button-grid">
+          ${buttons.map(([title, text]) => `
+            <button class="mini-card" type="button" data-popup-title="${escapeHTML(title)}" data-popup-text="${escapeHTML(explainItem(`${title} ${text}`, 2))}">
+              <strong>${escapeHTML(title)}</strong>
+              <span>${escapeHTML(text)}</span>
+              <div class="card-hint">Toque para aplicar</div>
+            </button>
+          `).join("")}
+        </div>
+      `);
+    }
+
+    function actionPanel(actions) {
+      return panel("Cards de ação", "dark", `
+        <div class="action-grid">
+          ${actions.map(([title, when, action, caution]) => `
+            <button class="action-card" type="button" data-popup-title="${escapeHTML(title)}" data-popup-text="${escapeHTML(explainItem(`${title} ${when} ${action}`, 5))}">
+              <strong>${escapeHTML(title)}</strong>
+              <div class="action-meta">
+                <div><b>Quando aparece:</b> ${escapeHTML(when)}</div>
+                <div><b>Ajuste possível:</b> ${escapeHTML(action)}</div>
+                <div><b>Cautela:</b> ${escapeHTML(caution)}</div>
+              </div>
+              <div class="card-hint">Toque para entender a decisão</div>
+            </button>
+          `).join("")}
+        </div>
+      `);
+    }
+
+    function signalPanel(signals) {
+      return panel("Radar de sinais", "dark", `
+        <div class="signal-grid">
+          ${signals.map(([title, text]) => `
+            <button class="signal-card" type="button" data-popup-title="${escapeHTML(title)}" data-popup-text="${escapeHTML(explainItem(`${title} ${text}`, 6))}">
+              <strong>${escapeHTML(title)}</strong>
+              <span>${escapeHTML(text)}</span>
+              <div class="card-hint">Toque para interpretar</div>
+            </button>
+          `).join("")}
+        </div>
+      `);
+    }
+
+    function checklistPanel(items) {
+      return panel("Checklist de estudo", "", `
+        <div class="checklist">
+          ${items.map(item => `
+            <div class="check-item">
+              <span class="check-icon">✓</span>
+              <span>${escapeHTML(item)}</span>
+            </div>
+          `).join("")}
+        </div>
+      `);
+    }
+
+    function quizPanel(chapter) {
+      const quizzes = getQuizzes(chapter);
+      return panel("Decisões rápidas", "", `
+        ${quizzes.map((quiz, quizIndex) => {
+          const key = `${chapter.id}-${quizIndex}`;
+          const selected = state.quiz[key];
+          const feedbackVisible = selected !== undefined;
+          return `
+            <div class="quiz-set">
+              <h3>${escapeHTML(quiz.question)}</h3>
+              <div class="quiz-options">
+                ${quiz.options.map((option, optionIndex) => {
+                  let cls = "";
+                  if (selected !== undefined) {
+                    if (optionIndex === quiz.answer) cls = "is-correct";
+                    else if (optionIndex === selected) cls = "is-wrong";
+                  }
+                  return `<button class="quiz-option ${cls}" type="button" data-quiz="${quizIndex}" data-answer="${optionIndex}">${escapeHTML(option)}</button>`;
+                }).join("")}
+              </div>
+              <div class="feedback ${feedbackVisible ? "is-visible" : ""}">${feedbackVisible ? escapeHTML(quiz.feedback) : ""}</div>
+            </div>
+          `;
+        }).join("")}
+      `);
+    }
+
+    function handleQuiz(chapterId, quizIndex, answer) {
+      state.quiz[`${chapterId}-${quizIndex}`] = answer;
+      saveState();
+      render();
+    }
+
+    function renderFinish() {
+      root.innerHTML = `
+        <section class="finish-panel is-active">
+          <div class="finish-card">
+            <span class="kicker">Finalização</span>
+            <h2>Leitura antes da carga</h2>
+            <p>Este ebook não foi feito para decorar respostas prontas. Ele foi feito para treinar um modo de raciocinar: olhar para o aluno real, interpretar a execução e ajustar a demanda com critério.</p>
+            <p>A ficha continua importante, mas ela é ponto de partida. O atendimento exige comparar contexto, técnica, relato de esforço, sinais de fadiga e objetivo da série.</p>
+            <p><strong>Pergunta-guia:</strong> o que está acontecendo agora e qual é a menor mudança suficiente?</p>
+          </div>
+          ${panel("Resumo operacional", "", `
+            <div class="recap">
+              <div class="recap-line">Ajuste não é improviso quando nasce de observação, motivo e ação.</div>
+              <div class="recap-line">RPE e RIR ajudam a conversar, mas a técnica observada calibra a decisão.</div>
+              <div class="recap-line">Sinais visuais são pistas, não medidas de precisão.</div>
+              <div class="recap-line">A menor mudança suficiente protege a referência do treino.</div>
+              <div class="recap-line">Comunicar bem o ajuste faz parte da postura profissional.</div>
+            </div>
+          `)}
+          <div class="complete-card">
+            <strong>Mensagem final</strong>
+            <span>Use este material como base de estudo. Na prática, a habilidade amadurece quando você observa, decide, comunica e depois refina sua leitura com supervisão e experiência.</span>
+            <button class="btn btn-primary" type="button" data-go="1">Revisar desde o início</button>
+          </div>
+        </section>
+      `;
+
+      root.querySelector("[data-go]").addEventListener("click", () => setView("chapter", 1));
+    }
+
+    function render() {
+      if (state.view === "home") {
+        renderHome();
+      } else if (state.view === "finish") {
+        renderFinish();
+      } else {
+        const chapter = chapters.find(ch => ch.id === state.chapter) || chapters[0];
+        renderChapter(chapter);
+      }
+      updateMeta();
+    }
+
+    prevBtn.addEventListener("click", () => {
+      goToPageIndex(currentPageIndex() - 1);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      goToPageIndex(currentPageIndex() + 1);
+    });
+
+    homeBtn.addEventListener("click", () => setView("home"));
+
+    chapterMenuBtn.addEventListener("click", openChapterMenu);
+    chapterMenuClose.addEventListener("click", closeChapterMenu);
+    chapterMenu.addEventListener("click", event => {
+      if (event.target === chapterMenu) closeChapterMenu();
+    });
+
+    infoPopupClose.addEventListener("click", closeInfoPopup);
+    infoPopupBackdrop.addEventListener("click", closeInfoPopup);
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeInfoPopup();
+        closeChapterMenu();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preview de Produtos - Controle de Carga</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #101214;
+      --graphite: #151515;
+      --graphite-2: #242628;
+      --paper: #f4f6f7;
+      --surface: #ffffff;
+      --line: #d8dde1;
+      --muted: #5d666f;
+      --lime: #dfff2f;
+      --lime-soft: #edf7a6;
+      --blue: #285f8f;
+      --red: #a83f36;
+      --radius: 8px;
+      --shadow: 0 18px 45px rgba(16, 18, 20, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 40px;
+    }
+
+    .product-header {
+      display: grid;
+      gap: 18px;
+      padding: 28px;
+      background: var(--graphite);
+      color: #ffffff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-header::after {
+      content: "";
+      position: absolute;
+      right: -48px;
+      top: -36px;
+      width: 190px;
+      height: 190px;
+      background: linear-gradient(135deg, transparent 0 42%, var(--lime) 42% 58%, transparent 58%);
+      opacity: 0.75;
+      transform: rotate(-8deg);
+    }
+
+    .eyebrow {
+      width: fit-content;
+      margin: 0;
+      padding: 6px 10px;
+      background: var(--lime);
+      color: #111111;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 840px;
+      margin-bottom: 0;
+      font-size: 3.9rem;
+      line-height: 0.98;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .header-copy {
+      max-width: 820px;
+      margin: 0;
+      color: #e5e8ea;
+      font-size: 1rem;
+    }
+
+    .guide-question {
+      display: grid;
+      gap: 6px;
+      max-width: 760px;
+      margin: 0;
+      padding-left: 14px;
+      border-left: 5px solid var(--lime);
+      font-size: 1.12rem;
+      font-weight: 700;
+    }
+
+    .guide-question span {
+      color: #b9c0c5;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 24px;
+      align-items: start;
+      margin-top: 24px;
+    }
+
+    .section-label {
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .slide-preview,
+    .ebook-preview {
+      min-width: 0;
+    }
+
+    .slide-frame {
+      min-height: 560px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 18px;
+      padding: 26px;
+      background: #0b0b0b;
+      color: #ffffff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .slide-title {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+      padding-right: 6px;
+    }
+
+    .slide-title h2 {
+      margin-bottom: 14px;
+      font-size: 3rem;
+      line-height: 1;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .slide-title p {
+      margin-bottom: 0;
+      color: #d7dbdf;
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .decision-strip b {
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      background: var(--lime);
+      color: #101214;
+      font-size: 0.8rem;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .matrix {
+      display: grid;
+      align-content: stretch;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .matrix-head,
+    .matrix-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .matrix-head span {
+      padding: 8px 10px;
+      background: var(--lime);
+      color: #111111;
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .matrix-row span,
+    .matrix-row strong {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      padding: 9px 10px;
+      border: 1px solid #3a3f42;
+      background: #17191b;
+      font-size: 0.86rem;
+    }
+
+    .matrix-row strong {
+      color: var(--lime-soft);
+      font-weight: 800;
+    }
+
+    .phone {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 14px;
+      background: #111315;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .phone-screen {
+      overflow: hidden;
+      background: var(--surface);
+      border-radius: 18px;
+      border: 1px solid #2f3336;
+    }
+
+    .chapter-hero {
+      padding: 22px 18px;
+      background: var(--graphite);
+      color: #ffffff;
+    }
+
+    .chapter-hero h2 {
+      margin-bottom: 10px;
+      font-size: 1.55rem;
+      line-height: 1.05;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .chapter-hero p {
+      margin-bottom: 0;
+      color: #dce1e4;
+      font-size: 0.95rem;
+    }
+
+    .mobile-content {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .definition-pair {
+      display: grid;
+      gap: 10px;
+    }
+
+    .definition {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--lime);
+      border-radius: var(--radius);
+      background: #fbfcfd;
+    }
+
+    .definition h3,
+    .cue-list h3,
+    .phrase-box h3 {
+      margin-bottom: 6px;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+    }
+
+    .definition p,
+    .phrase-box p {
+      margin-bottom: 0;
+      color: #283038;
+      font-size: 0.92rem;
+    }
+
+    .cue-list {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: #eef2f4;
+    }
+
+    .cue-list ul {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding-left: 18px;
+      color: #273039;
+      font-size: 0.92rem;
+    }
+
+    .phrase-box {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: #f7f7df;
+      border: 1px solid #e2e6a6;
+    }
+
+    .phrase-box blockquote {
+      margin: 0;
+      padding-left: 12px;
+      border-left: 4px solid var(--lime);
+      color: #1d242a;
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .quick-actions span {
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      border-radius: 6px;
+      background: #202326;
+      color: #ffffff;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .quick-actions span:nth-child(1) {
+      background: var(--blue);
+    }
+
+    .quick-actions span:nth-child(3) {
+      background: var(--red);
+    }
+
+    .validation-note {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--lime);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 10px 28px rgba(16, 18, 20, 0.08);
+    }
+
+    .validation-note h2 {
+      margin-bottom: 0;
+      font-size: 1rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .validation-note p {
+      margin-bottom: 0;
+      color: #273039;
+      font-size: 0.94rem;
+    }
+
+    .validation-note ul {
+      display: grid;
+      gap: 7px;
+      margin: 0;
+      padding-left: 18px;
+      color: #273039;
+      font-size: 0.94rem;
+    }
+
+    .validation-note code {
+      padding: 2px 4px;
+      border-radius: 4px;
+      background: #eef2f4;
+      color: #151515;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 900px) {
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .slide-frame {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        padding: 16px 0 24px;
+      }
+
+      .product-header {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 2.3rem;
+      }
+
+      .slide-title h2 {
+        font-size: 2.1rem;
+      }
+
+      .product-header::after {
+        right: -84px;
+        top: -58px;
+        opacity: 0.2;
+      }
+
+      .slide-frame {
+        aspect-ratio: auto;
+        min-height: 0;
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      .matrix-head,
+      .matrix-row {
+        grid-template-columns: 1fr;
+      }
+
+      .decision-strip,
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .phone {
+        max-width: 100%;
+      }
+
+      .validation-note {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="product-header" aria-labelledby="product-title">
+      <p class="eyebrow">Preview interno de producao didatica</p>
+      <h1 id="product-title">Controle de carga dentro da sessao</h1>
+      <p class="header-copy">Prototipo visual para alinhar a apresentacao em slides e o ebook mobile-first antes da producao final dos materiais.</p>
+      <p class="guide-question">
+        <span>Pergunta-guia</span>
+        "O que esta acontecendo agora e qual a menor mudanca que adequa a intensidade?"
+      </p>
+    </section>
+
+    <div class="preview-grid">
+      <section class="slide-preview" aria-labelledby="slide-preview-title">
+        <p class="section-label">Amostra de slide</p>
+        <div class="slide-frame">
+          <div class="slide-title">
+            <div>
+              <p class="eyebrow" id="slide-preview-title">Bloco 5</p>
+              <h2>Da leitura ao ajuste</h2>
+              <p>Esta matriz orienta o raciocinio, mas nao deve ser ensinada como algoritmo rigido.</p>
+            </div>
+            <div class="decision-strip" aria-label="Decisoes provaveis">
+              <b>Progredir</b>
+              <b>Manter</b>
+              <b>Reduzir</b>
+            </div>
+          </div>
+
+          <div class="matrix" aria-label="Matriz de decisao para ajuste agudo">
+            <div class="matrix-head">
+              <span>Se voce observar</span>
+              <span>Decisao provavel</span>
+            </div>
+            <div class="matrix-row">
+              <span>Tecnica boa e esforco percebido abaixo do alvo planejado</span>
+              <strong>Progredir</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Tecnica boa e esforco proximo ao alvo planejado</span>
+              <strong>Manter</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Tecnica oscila ou fluidez sugere esforco acima do alvo planejado</span>
+              <strong>Reduzir</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Queda acentuada de rendimento entre as series</span>
+              <strong>Recuperar</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Movimento instavel ou perda visivel de padrao motor</span>
+              <strong>Simplificar</strong>
+            </div>
+            <div class="matrix-row">
+              <span>Desconforto incomum ou mudanca relevante no estado do aluno</span>
+              <strong>Modificar</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ebook-preview" aria-labelledby="ebook-preview-title">
+        <p class="section-label">Amostra de ebook mobile</p>
+        <div class="phone">
+          <article class="phone-screen">
+            <header class="chapter-hero">
+              <p class="eyebrow" id="ebook-preview-title">Capitulo 2</p>
+              <h2>Carga, intensidade e resposta</h2>
+              <p>A intensidade nao e determinada apenas pelo peso, mas pela interacao entre carga externa e resposta individual naquele momento.</p>
+            </header>
+
+            <div class="mobile-content">
+              <div class="definition-pair">
+                <section class="definition" aria-labelledby="external-load">
+                  <h3 id="external-load">Carga externa</h3>
+                  <p>Variaveis manipulaveis pelo treinador, como peso, series, repeticoes, amplitude, ritmo, intervalo e escolha do exercicio.</p>
+                </section>
+
+                <section class="definition" aria-labelledby="internal-load">
+                  <h3 id="internal-load">Carga interna</h3>
+                  <p>Resposta fisiologica e perceptiva do aluno ao estimulo, incluindo esforco percebido, fadiga, perda de fluidez, prontidao e qualidade tecnica.</p>
+                </section>
+              </div>
+
+              <section class="cue-list" aria-labelledby="fatigue-cues">
+                <h3 id="fatigue-cues">Sinais de fadiga como pistas</h3>
+                <ul>
+                  <li>Reducao aparente da velocidade de movimento ou perda visivel de fluidez.</li>
+                  <li>Compensacoes leves, encurtamento involuntario da amplitude ou perda de estabilidade.</li>
+                  <li>Mudanca de expressao facial, respiracao menos organizada ou hesitacao incomum.</li>
+                </ul>
+              </section>
+
+              <section class="phrase-box" aria-labelledby="professional-phrase">
+                <h3 id="professional-phrase">Frase profissional</h3>
+                <blockquote>"Para mantermos a qualidade tecnica que buscamos, vou ajustar o peso para a proxima serie."</blockquote>
+              </section>
+
+              <div class="quick-actions" aria-label="Acoes de ajuste">
+                <span>Recuperar</span>
+                <span>Simplificar</span>
+                <span>Modificar</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <section class="validation-note" aria-labelledby="validation-title">
+      <h2 id="validation-title">Nota de validacao</h2>
+      <p>Este preview foi informado por <code>fluxo padrão/08_fonte-mestre-validada.md</code>, <code>fluxo padrão/04_roteiro-mestre-rascunho.md</code>, <code>diretrizes/diretriz-apresentacao-slides.md</code>, <code>diretrizes/diretriz-ebook-mobile-first.md</code> e <code>diretrizes/criterios-linguagem-densidade-operacional.md</code>.</p>
+      <ul>
+        <li>O arquivo apresenta uma amostra visual e editorial; nao e o slide deck final nem o ebook final.</li>
+        <li>A proxima fase deve criar pacotes de prompts para NotebookLM a partir dos documentos-diretriz, mantendo a producao em partes.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
