@@ -76,3 +76,7 @@ git push
 - Se usar GitHub Free, o repositorio precisa ser publico para Pages em repositorios comuns.
 - Para este ebook, nao e necessario configurar build, Node, Vite ou React. E apenas HTML estatico.
 - Nao envie o arquivo `.html` cru pelo WhatsApp como produto final; envie o link publicado.
+
+## Registro de acionamento
+
+- 2026-07-03 21:05 - Reacionamento do deploy do GitHub Pages com commit assinado pela conta `fitmanagementels`.
